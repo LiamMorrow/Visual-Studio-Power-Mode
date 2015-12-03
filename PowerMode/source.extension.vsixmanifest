@@ -3,7 +3,8 @@
   <Metadata>
     <Identity Id="PowerMode.Liam Morrow.53e86655-8a9a-4544-ac12-4aef42035b5f" Version="1.0" Language="en-US" Publisher="Liam Morrow" />
     <DisplayName>PowerMode</DisplayName>
-    <Description>Empty VSIX Project.</Description>
+    <Description xml:space="preserve">An extension that attempts to clone the power mode in Atom found here : https://atom.io/packages/activate-power-mode</Description>
+    <License>LICENCE.txt</License>
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[14.0]" />
