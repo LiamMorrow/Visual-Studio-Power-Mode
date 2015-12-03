@@ -1,10 +1,4 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="ExplosionViewportAdornmentTextViewCreationListener.cs" company="Company">
-//     Copyright (c) Company.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
-
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
 
@@ -28,7 +22,7 @@ namespace PowerMode
         /// </summary>
         [Export(typeof(AdornmentLayerDefinition))]
         [Name("ExplosionViewportAdornment")]
-        [Order(After = PredefinedAdornmentLayers.Caret)]
+        [Order(After = PredefinedAdornmentLayers.Outlining)]
         private AdornmentLayerDefinition editorAdornmentLayer;
 
 #pragma warning restore 649, 169
