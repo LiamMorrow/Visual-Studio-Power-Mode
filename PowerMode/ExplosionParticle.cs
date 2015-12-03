@@ -13,6 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,24 +27,62 @@ using Microsoft.VisualStudio.Text.Editor;
 
 namespace PowerMode
 {
-    class ExplosionParticle
+    public class ExplosionParticle
     {
-        private double _alpha = 0.5;
-        private Color _color = Colors.BlueViolet;
-        private double _left, _top;
-        private IWpfTextView _view;
-        private const double gravity = 0.3;
-        public static int ParticleCount { get; set; }
-        private readonly IAdornmentLayer adornmentLayer;
-        public int MaxParticleCount { get; set; } = 50;
+        private static double _alphaRemoveAmount = 0.045;
+        private static Color _color = Colors.Black;
 
-        private System.Windows.Rect _rect = new System.Windows.Rect(-5, -5, 5, 5);
-        private EllipseGeometry geometry;
+        private static int _frameDelay = 17;
+
+        private static double _gravity = 0.3;
+
+        private static int _maxParticleCount = int.MaxValue;
+
+        private static int _particleCount;
+
         [ThreadStatic]
         private static Random _random;
 
-        private double _alphaRemoveAmount = 0.008;
-        public static int FrameDelay { get; set; } = 17;
+        private static double _startAlpha = 0.9;
+        private readonly IAdornmentLayer adornmentLayer;
+        private double _left, _top;
+
+        private System.Windows.Rect _rect = new System.Windows.Rect(-5, -5, 5, 5);
+
+        private EllipseGeometry geometry;
+
+        public double AlphaRemoveAmount
+        {
+            get { return _alphaRemoveAmount; }
+            set { _alphaRemoveAmount = value; }
+        }
+
+        public Color Color { get { return _color; } set { _color = value; } }
+
+        public int FrameDelay
+        {
+            get { return _frameDelay; }
+            set { _frameDelay = value; }
+        }
+
+        public double Gravity
+        {
+            get { return _gravity; }
+            set { _gravity = value; }
+        }
+
+        public int MaxParticleCount
+        {
+            get { return _maxParticleCount; }
+            set { _maxParticleCount = value; }
+        }
+
+        public double StartAlpha
+        {
+            get { return _startAlpha; }
+            set { _startAlpha = value; }
+        }
+
         private static Random Random
         {
             get
@@ -55,29 +94,34 @@ namespace PowerMode
                 return _random;
             }
         }
-        public ExplosionParticle(IWpfTextView view,IAdornmentLayer adornment, double top, double left)
+
+        private int ParticleCount
+        {
+            get { return _particleCount; }
+            set { _particleCount = value; }
+        }
+
+        public ExplosionParticle()
+        {
+        }
+
+        public ExplosionParticle(IAdornmentLayer adornment, double top, double left)
         {
             _left = left;
             adornmentLayer = adornment;
             _top = top;
-            _view = view;
-            _alpha = Random.NextDouble();
             geometry = new EllipseGeometry(_rect);
         }
-        private async Task WaitForParticleSpace()
-        {
-            while (ParticleCount > MaxParticleCount)
-            {
-                await Task.Delay(FrameDelay);
-            }
-        }
+
         public async Task Explode()
         {
-            await WaitForParticleSpace();
+            if (ParticleCount > MaxParticleCount)
+                return;
             ParticleCount++;
-            var upVelocity = Random.NextDouble()*10;
-            var leftVelocity = Random.NextDouble() * 5*(Random.Next(0,2)==1?1:-1);
-            var brush = new SolidColorBrush(_color);
+            var alpha = StartAlpha;
+            var upVelocity = Random.NextDouble() * 10;
+            var leftVelocity = Random.NextDouble() * 2 * (Random.Next(0, 2) == 1 ? 1 : -1);
+            var brush = new SolidColorBrush(Color);
             brush.Freeze();
             var drawing = new GeometryDrawing(brush, null, geometry);
             drawing.Freeze();
@@ -88,28 +132,41 @@ namespace PowerMode
             {
                 Source = drawingImage,
             };
-            while (_alpha >= _alphaRemoveAmount)
+            while (alpha >= _alphaRemoveAmount)
             {
                 _left -= leftVelocity;
                 _top -= upVelocity;
-                upVelocity -= gravity;
-                _alpha -= _alphaRemoveAmount;
+                upVelocity -= Gravity;
+                alpha -= _alphaRemoveAmount;
 
-                // Draw a square with the created brush and pen
+                image.Opacity = alpha;
 
-                image.Opacity = _alpha;
-
-                // Place the image in the top right hand corner of the Viewport
                 Canvas.SetLeft(image, _left);
                 Canvas.SetTop(image, _top);
-
-                // Add the image to the adornment layer and make it relative to the viewport
-                this.adornmentLayer.AddAdornment(AdornmentPositioningBehavior.ViewportRelative, null, null, image, null);
-                await Task.Delay(FrameDelay);
+                try
+                {
+                    // Add the image to the adornment layer and make it relative to the viewport
+                    this.adornmentLayer.AddAdornment(AdornmentPositioningBehavior.ViewportRelative,
+                        null,
+                        null,
+                        image,
+                        null);
+                    await Task.Delay(FrameDelay);
+                    adornmentLayer.RemoveAdornment(image);
+                }
+                catch
+                {
+                    break;
+                }
+            }
+            try
+            {
                 adornmentLayer.RemoveAdornment(image);
+            }
+            catch
+            {
             }
             ParticleCount--;
         }
-        
     }
 }
