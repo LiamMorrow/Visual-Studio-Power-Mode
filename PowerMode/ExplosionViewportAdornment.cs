@@ -42,6 +42,10 @@ namespace PowerMode
         /// </summary>
         private readonly IWpfTextView _view;
 
+        public static bool ParticlesEnabled { get; set; } = true;
+
+        public static bool ShakeEnabled { get; set; } = true;
+
         public int ExplosionAmount { get; set; } = 2;
 
         public int ExplosionDelay { get; set; } = 50;
@@ -98,16 +102,25 @@ namespace PowerMode
 
         private async Task HandleChange(int delta)
         {
-            for (var i = 0; i < 10; i++)
+            if (ParticlesEnabled)
             {
-                var explosion = new ExplosionParticle(_adornmentLayer, (DTE)Package.GetGlobalService(typeof(DTE)), _view.Caret.Top, _view.Caret.Left);
-                var expl = explosion.Explode();
+                for (var i = 0; i < 10; i++)
+                {
+                    var explosion = new ExplosionParticle(_adornmentLayer,
+                        (DTE)Package.GetGlobalService(typeof(DTE)),
+                        _view.Caret.Top,
+                        _view.Caret.Left);
+                    var expl = explosion.Explode();
 
 #pragma warning disable CS4014 // Don't care about return
-                Task.Run(() => expl);
+                    Task.Run(() => expl);
 #pragma warning restore CS4014
+                }
             }
-            await Shake(delta);
+            if (ShakeEnabled)
+            {
+                await Shake(delta);
+            }
         }
 
         private async Task Shake(int delta)

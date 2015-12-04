@@ -43,85 +43,21 @@ namespace PowerMode
 
         private EllipseGeometry geometry;
 
-        public double AlphaRemoveAmount
-        {
-            get
-            {
-                var dte = _service;
-                var props = dte.Properties["Power Mode", "General"];
-                return (double)props.Item(nameof(OptionPageGrid.AlphaRemoveAmount)).Value;
-            }
-        }
+        public static double AlphaRemoveAmount { get; set; } = 0.045;
 
-        public Color Color
-        {
-            get
-            {
-                var dte = _service;
-                var props = dte.Properties["Power Mode", "General"];
-                return (Color)props.Item(nameof(OptionPageGrid.Color)).Value;
-            }
-        }
+        public static Color Color { get; set; } = Colors.Black;
 
-        public int FrameDelay
-        {
-            get
-            {
-                var dte = _service;
-                var props = dte.Properties["Power Mode", "General"];
-                return (int)props.Item(nameof(OptionPageGrid.FrameDelay)).Value;
-            }
-        }
+        public static int FrameDelay { get; set; } = 17;
 
-        public double Gravity
-        {
-            get
-            {
-                var dte = _service;
-                var props = dte.Properties["Power Mode", "General"];
-                return (double)props.Item(nameof(OptionPageGrid.Gravity)).Value;
-            }
-        }
+        public static double Gravity { get; set; } = 0.3;
 
-        public int MaxParticleCount
-        {
-            get
-            {
-                var dte = _service;
-                var props = dte.Properties["Power Mode", "General"];
-                return (int)props.Item(nameof(OptionPageGrid.MaxParticleCount)).Value;
-            }
-        }
+        public static int MaxParticleCount { get; set; } = int.MaxValue;
 
-        public double MaxSideVelocity
-        {
-            get
-            {
-                var dte = _service;
-                var props = dte.Properties["Power Mode", "General"];
-                return (double)props.Item(nameof(OptionPageGrid.MaxSideVelocity)).Value;
-            }
-        }
+        public static double MaxSideVelocity { get; set; } = 2;
 
-        public double MaxUpVelocity
-        {
-            get
-            {
-                var dte = _service;
-                var props = dte.Properties["Power Mode", "General"];
-                return (double)props.Item(nameof(OptionPageGrid.MaxUpVelocity)).Value;
-            }
-        }
+        public static double MaxUpVelocity { get; set; } = 10;
 
-        public double StartAlpha
-        {
-            get
-            {
-                var dte = _service;
-                var props = dte.Properties["Power Mode", "General"];
-                return (double)props.Item(nameof(OptionPageGrid.StartAlpha)).Value;
-            }
-        }
+        public static double StartAlpha { get; set; } = 0.9;
 
         private static int ParticleCount { get; set; }
 

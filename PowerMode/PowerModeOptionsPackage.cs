@@ -60,9 +60,49 @@ namespace PowerMode
         public double MaxUpVelocity { get; set; } = 10;
 
         [Category("Power Mode")]
+        [DisplayName("Particles Enabled")]
+        [Description("Sets whether the particles are enabled")]
+        public bool ParticlesEnabled { get; set; } = true;
+
+        [Category("Power Mode")]
+        [DisplayName("Screen Shake")]
+        [Description("Sets whether the screen shakes")]
+        public bool ShakeEnabled { get; set; } = true;
+
+        [Category("Power Mode")]
         [DisplayName("Start Alpha")]
         [Description("The starting opacity of the particle. Affects lifetime.")]
         public double StartAlpha { get; set; } = 0.9;
+
+        public override void LoadSettingsFromStorage()
+        {
+            base.LoadSettingsFromStorage();
+            ExplosionParticle.AlphaRemoveAmount = AlphaRemoveAmount;
+            ExplosionParticle.Color = Color;
+            ExplosionParticle.FrameDelay = FrameDelay;
+            ExplosionParticle.Gravity = Gravity;
+            ExplosionParticle.MaxParticleCount = MaxParticleCount;
+            ExplosionParticle.MaxSideVelocity = MaxSideVelocity;
+            ExplosionParticle.MaxUpVelocity = MaxUpVelocity;
+            ExplosionParticle.StartAlpha = StartAlpha;
+            ExplosionViewportAdornment.ShakeEnabled = ShakeEnabled;
+            ExplosionViewportAdornment.ParticlesEnabled = ParticlesEnabled;
+        }
+
+        public override void SaveSettingsToStorage()
+        {
+            base.SaveSettingsToStorage();
+            AlphaRemoveAmount = ExplosionParticle.AlphaRemoveAmount;
+            Color = ExplosionParticle.Color;
+            FrameDelay = ExplosionParticle.FrameDelay;
+            Gravity = ExplosionParticle.Gravity;
+            MaxParticleCount = ExplosionParticle.MaxParticleCount;
+            MaxSideVelocity = ExplosionParticle.MaxSideVelocity;
+            MaxUpVelocity = ExplosionParticle.MaxUpVelocity;
+            StartAlpha = ExplosionParticle.StartAlpha;
+            ShakeEnabled = ExplosionViewportAdornment.ShakeEnabled;
+            ParticlesEnabled = ExplosionViewportAdornment.ParticlesEnabled;
+        }
     }
 
     /// <summary>
