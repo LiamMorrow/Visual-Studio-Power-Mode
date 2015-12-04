@@ -1,33 +1,60 @@
-﻿/*
-   Copyright 2015 Liam Morrow
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
+﻿//------------------------------------------------------------------------------
+// <copyright file="PowerModeOptionsPackage.cs" company="Company">
+//     Copyright (c) Company.  All rights reserved.
+// </copyright>
+//------------------------------------------------------------------------------
 
 using System;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
+using System.Windows.Media;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.Win32;
 
 namespace PowerMode
 {
+    public class OptionPageGrid : DialogPage
+    {
+        [Category("Power Mode")]
+        [DisplayName("Alpha Decrement Amount")]
+        [Description("The amount of alpha removed every frame.")]
+        public static double AlphaRemoveAmount { get; set; } = 0.045;
+
+        [Category("Power Mode")]
+        [DisplayName("Explosion Particle Color")]
+        [Description("The color of the explosion particle")]
+        public static Color Color { get; set; } = Colors.Black;
+
+        [Category("Power Mode")]
+        [Description("Delay between Frames (milliseconds)")]
+        [DisplayName("Frame Delay")]
+        public static int FrameDelay { get; set; } = 17;
+
+        [Category("Power Mode")]
+        [DisplayName("Gravity")]
+        [Description("The strength of the gravity")]
+        public static double Gravity { get; set; } = 0.3;
+
+        [Category("Power Mode")]
+        [DisplayName("Max Particle Count")]
+        [Description("The maximum amount of particles at one time")]
+        public static int MaxParticleCount { get; set; } = int.MaxValue;
+
+        [Category("Power Mode")]
+        [DisplayName("Start Alpha")]
+        [Description("The starting opacity of the particle. Affects lifetime.")]
+        public static double StartAlpha { get; set; } = 0.9;
+    }
+
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
     /// </summary>
@@ -46,23 +73,24 @@ namespace PowerMode
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
-    [ProvideMenuResource("Menus.ctmenu", 1)]
-    [ProvideToolWindow(typeof(ExplosionToolWindow))]
-    [Guid(ExplosionToolWindowPackage.PackageGuidString)]
-    [ProvideBindingPath]
+    [InstalledProductRegistration("#1110", "#1112", "1.0", IconResourceID = 1400)] // Info on this package for Help/About
+    [Guid(PowerModeOptionsPackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class ExplosionToolWindowPackage : Package
+    [ProvideOptionPage(typeof(OptionPageGrid),
+    "Power Mode", "General", 1114, 1113, true)]
+    [ProvideProfile(typeof(OptionPageGrid),
+    "Power Mode", "General", 1114, 1113, isToolsOptionPage: true, DescriptionResourceID = 1115)]
+    public sealed class PowerModeOptionsPackage : Package
     {
         /// <summary>
-        /// ExplosionToolWindowPackage GUID string.
+        /// PowerModeOptionsPackage GUID string.
         /// </summary>
-        public const string PackageGuidString = "907770fc-129d-4a11-8c45-a55246b7938b";
+        public const string PackageGuidString = "4e687eae-ae26-4139-b888-a0ae8c2e16ff";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExplosionToolWindow"/> class.
+        /// Initializes a new instance of the <see cref="PowerModeOptionsPackage"/> class.
         /// </summary>
-        public ExplosionToolWindowPackage()
+        public PowerModeOptionsPackage()
         {
             // Inside this method you can place any initialization code that does not require
             // any Visual Studio service because at this point the package object is created but
@@ -78,7 +106,6 @@ namespace PowerMode
         /// </summary>
         protected override void Initialize()
         {
-            ExplosionToolWindowCommand.Initialize(this);
             base.Initialize();
         }
 

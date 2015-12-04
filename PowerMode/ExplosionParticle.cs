@@ -29,21 +29,9 @@ namespace PowerMode
 {
     public class ExplosionParticle
     {
-        private static double _alphaRemoveAmount = 0.045;
-        private static Color _color = Colors.Black;
-
-        private static int _frameDelay = 17;
-
-        private static double _gravity = 0.3;
-
-        private static int _maxParticleCount = int.MaxValue;
-
-        private static int _particleCount;
-
         [ThreadStatic]
         private static Random _random;
 
-        private static double _startAlpha = 0.9;
         private readonly IAdornmentLayer adornmentLayer;
         private double _left, _top;
 
@@ -51,37 +39,7 @@ namespace PowerMode
 
         private EllipseGeometry geometry;
 
-        public double AlphaRemoveAmount
-        {
-            get { return _alphaRemoveAmount; }
-            set { _alphaRemoveAmount = value; }
-        }
-
-        public Color Color { get { return _color; } set { _color = value; } }
-
-        public int FrameDelay
-        {
-            get { return _frameDelay; }
-            set { _frameDelay = value; }
-        }
-
-        public double Gravity
-        {
-            get { return _gravity; }
-            set { _gravity = value; }
-        }
-
-        public int MaxParticleCount
-        {
-            get { return _maxParticleCount; }
-            set { _maxParticleCount = value; }
-        }
-
-        public double StartAlpha
-        {
-            get { return _startAlpha; }
-            set { _startAlpha = value; }
-        }
+        private static int ParticleCount { get; set; }
 
         private static Random Random
         {
@@ -93,12 +51,6 @@ namespace PowerMode
                 }
                 return _random;
             }
-        }
-
-        private int ParticleCount
-        {
-            get { return _particleCount; }
-            set { _particleCount = value; }
         }
 
         public ExplosionParticle()
@@ -115,13 +67,13 @@ namespace PowerMode
 
         public async Task Explode()
         {
-            if (ParticleCount > MaxParticleCount)
+            if (ParticleCount > OptionPageGrid.MaxParticleCount)
                 return;
             ParticleCount++;
-            var alpha = StartAlpha;
+            var alpha = OptionPageGrid.StartAlpha;
             var upVelocity = Random.NextDouble() * 10;
             var leftVelocity = Random.NextDouble() * 2 * (Random.Next(0, 2) == 1 ? 1 : -1);
-            var brush = new SolidColorBrush(Color);
+            var brush = new SolidColorBrush(OptionPageGrid.Color);
             brush.Freeze();
             var drawing = new GeometryDrawing(brush, null, geometry);
             drawing.Freeze();
@@ -132,12 +84,12 @@ namespace PowerMode
             {
                 Source = drawingImage,
             };
-            while (alpha >= _alphaRemoveAmount)
+            while (alpha >= OptionPageGrid.AlphaRemoveAmount)
             {
                 _left -= leftVelocity;
                 _top -= upVelocity;
-                upVelocity -= Gravity;
-                alpha -= _alphaRemoveAmount;
+                upVelocity -= OptionPageGrid.Gravity;
+                alpha -= OptionPageGrid.AlphaRemoveAmount;
 
                 image.Opacity = alpha;
 
@@ -151,7 +103,7 @@ namespace PowerMode
                         null,
                         image,
                         null);
-                    await Task.Delay(FrameDelay);
+                    await Task.Delay(OptionPageGrid.FrameDelay);
                     adornmentLayer.RemoveAdornment(image);
                 }
                 catch
