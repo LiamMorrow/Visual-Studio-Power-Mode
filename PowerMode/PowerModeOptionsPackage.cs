@@ -27,32 +27,42 @@ namespace PowerMode
         [Category("Power Mode")]
         [DisplayName("Alpha Decrement Amount")]
         [Description("The amount of alpha removed every frame.")]
-        public static double AlphaRemoveAmount { get; set; } = 0.045;
+        public double AlphaRemoveAmount { get; set; } = 0.045;
 
         [Category("Power Mode")]
         [DisplayName("Explosion Particle Color")]
         [Description("The color of the explosion particle")]
-        public static Color Color { get; set; } = Colors.Black;
+        public Color Color { get; set; } = Colors.Black;
 
         [Category("Power Mode")]
         [Description("Delay between Frames (milliseconds)")]
         [DisplayName("Frame Delay")]
-        public static int FrameDelay { get; set; } = 17;
+        public int FrameDelay { get; set; } = 17;
 
         [Category("Power Mode")]
         [DisplayName("Gravity")]
         [Description("The strength of the gravity")]
-        public static double Gravity { get; set; } = 0.3;
+        public double Gravity { get; set; } = 0.3;
 
         [Category("Power Mode")]
         [DisplayName("Max Particle Count")]
         [Description("The maximum amount of particles at one time")]
-        public static int MaxParticleCount { get; set; } = int.MaxValue;
+        public int MaxParticleCount { get; set; } = int.MaxValue;
+
+        [Category("Power Mode")]
+        [DisplayName("Max Side Velocity")]
+        [Description("The maximum sideward velocity of the particles")]
+        public double MaxSideVelocity { get; set; } = 2;
+
+        [Category("Power Mode")]
+        [DisplayName("Max Upwards Velocity")]
+        [Description("The maximum upward velocity of the particles")]
+        public double MaxUpVelocity { get; set; } = 10;
 
         [Category("Power Mode")]
         [DisplayName("Start Alpha")]
         [Description("The starting opacity of the particle. Affects lifetime.")]
-        public static double StartAlpha { get; set; } = 0.9;
+        public double StartAlpha { get; set; } = 0.9;
     }
 
     /// <summary>
@@ -73,13 +83,11 @@ namespace PowerMode
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#1110", "#1112", "1.0", IconResourceID = 1400)] // Info on this package for Help/About
-    [Guid(PowerModeOptionsPackage.PackageGuidString)]
+    [InstalledProductRegistration("#1110", "#1112", "1.0.2", IconResourceID = 1400)] // Info on this package for Help/About
+    [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideOptionPage(typeof(OptionPageGrid),
-    "Power Mode", "General", 1114, 1113, true)]
-    [ProvideProfile(typeof(OptionPageGrid),
-    "Power Mode", "General", 1114, 1113, isToolsOptionPage: true, DescriptionResourceID = 1115)]
+    "Power Mode", "General", 0, 0, true)]
     public sealed class PowerModeOptionsPackage : Package
     {
         /// <summary>

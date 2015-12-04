@@ -16,10 +16,11 @@
 
 using System;
 using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media;
+using EnvDTE;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using PowerMode.Extensions;
+using Package = Microsoft.VisualStudio.Shell.Package;
 
 namespace PowerMode
 {
@@ -32,18 +33,20 @@ namespace PowerMode
         private static Random _random;
 
         /// <summary>
+        /// The layer for the adornment.
+        /// </summary>
+        private readonly IAdornmentLayer _adornmentLayer;
+
+        /// <summary>
         /// Text view to add the adornment on.
         /// </summary>
         private readonly IWpfTextView _view;
 
-        /// <summary>
-        /// The layer for the adornment.
-        /// </summary>
-        private readonly IAdornmentLayer adornmentLayer;
+        public int ExplosionAmount { get; set; } = 2;
 
-        private int _explosionAmount = 2;
-        private int _explosionDelay = 50;
-        private int _maxShakeAmount = 5;
+        public int ExplosionDelay { get; set; } = 50;
+
+        public int MaxShakeAmount { get; set; } = 5;
 
         private static Random Random
         {
@@ -72,8 +75,7 @@ namespace PowerMode
             _view = view;
             _view.TextBuffer.Changed += TextBuffer_Changed;
             _view.TextBuffer.PostChanged += TextBuffer_PostChanged;
-
-            this.adornmentLayer = view.GetAdornmentLayer("ExplosionViewportAdornment");
+            _adornmentLayer = view.GetAdornmentLayer("ExplosionViewportAdornment");
         }
 
         private async void FormatCode(TextContentChangedEventArgs e)
@@ -96,52 +98,28 @@ namespace PowerMode
 
         private async Task HandleChange(int delta)
         {
-            var tags = _view.Caret.ContainingTextViewLine.GetAdornmentTags("");
             for (var i = 0; i < 10; i++)
             {
-                var explosion = new ExplosionParticle(adornmentLayer, _view.Caret.Top, _view.Caret.Left);
+                var explosion = new ExplosionParticle(_adornmentLayer, (DTE)Package.GetGlobalService(typeof(DTE)), _view.Caret.Top, _view.Caret.Left);
                 var expl = explosion.Explode();
+
+#pragma warning disable CS4014 // Don't care about return
                 Task.Run(() => expl);
+#pragma warning restore CS4014
             }
             await Shake(delta);
         }
 
         private async Task Shake(int delta)
         {
-            for (int i = 0; i < Math.Abs(delta) && i < _maxShakeAmount; i++)
+            for (int i = 0; i < Math.Abs(delta) && i < MaxShakeAmount; i++)
             {
-                int leftAmount, topAmount;
-                switch (Random.Next(0, 2))
-                {
-                    case 0:
-                        leftAmount = _explosionAmount;
-                        break;
+                int leftAmount = ExplosionAmount * Random.NextSignSwap(),
+                    topAmount = ExplosionAmount * Random.NextSignSwap();
 
-                    case 1:
-                        leftAmount = -_explosionAmount;
-                        break;
-
-                    default:
-                        leftAmount = 0;
-                        break;
-                }
-                switch (Random.Next(0, 2))
-                {
-                    case 0:
-                        topAmount = _explosionAmount;
-                        break;
-
-                    case 1:
-                        topAmount = -_explosionAmount;
-                        break;
-
-                    default:
-                        topAmount = 0;
-                        break;
-                }
                 _view.ViewportLeft += leftAmount;
                 _view.ViewScroller.ScrollViewportVerticallyByPixels(topAmount);
-                await Task.Delay(_explosionDelay);
+                await Task.Delay(ExplosionDelay);
                 _view.ViewportLeft -= leftAmount;
                 _view.ViewScroller.ScrollViewportVerticallyByPixels(-topAmount);
             }
