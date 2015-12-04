@@ -13,6 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 */
+
 using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
@@ -51,6 +52,5 @@ namespace PowerMode
             // The adorment will get wired to the text view events
             new ExplosionViewportAdornment(textView);
         }
-        
     }
 }

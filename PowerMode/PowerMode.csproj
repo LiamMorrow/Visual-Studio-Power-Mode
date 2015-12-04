@@ -214,6 +214,7 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\PowerModeOptionsPackage.ico" />
+    <Content Include="Resources\Screenshot.png" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="VSPackage.resx">
