@@ -110,16 +110,17 @@ namespace PowerMode
         public override void SaveSettingsToStorage()
         {
             base.SaveSettingsToStorage();
-            AlphaRemoveAmount = ExplosionParticle.AlphaRemoveAmount;
-            Color = ExplosionParticle.Color;
-            FrameDelay = ExplosionParticle.FrameDelay;
-            Gravity = ExplosionParticle.Gravity;
-            MaxParticleCount = ExplosionParticle.MaxParticleCount;
-            MaxSideVelocity = ExplosionParticle.MaxSideVelocity;
-            MaxUpVelocity = ExplosionParticle.MaxUpVelocity;
-            StartAlpha = ExplosionParticle.StartAlpha;
-            ShakeEnabled = ExplosionViewportAdornment.ShakeEnabled;
-            ParticlesEnabled = ExplosionViewportAdornment.ParticlesEnabled;
+
+            ExplosionParticle.AlphaRemoveAmount = AlphaRemoveAmount;
+            ExplosionParticle.Color = Color;
+            ExplosionParticle.FrameDelay = FrameDelay;
+            ExplosionParticle.Gravity = Gravity;
+            ExplosionParticle.MaxParticleCount = MaxParticleCount;
+            ExplosionParticle.MaxSideVelocity = MaxSideVelocity;
+            ExplosionParticle.MaxUpVelocity = MaxUpVelocity;
+            ExplosionParticle.StartAlpha = StartAlpha;
+            ExplosionViewportAdornment.ShakeEnabled = ShakeEnabled;
+            ExplosionViewportAdornment.ParticlesEnabled = ParticlesEnabled;
         }
     }
 
