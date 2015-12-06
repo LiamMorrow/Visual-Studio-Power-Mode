@@ -1,10 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="PowerMode.Liam Morrow.53e86655-8a9a-4544-ac12-4aef42035b5f" Version="1.1.2" Language="en-US" Publisher="Liam Morrow" />
+    <Identity Id="PowerMode.Liam Morrow.53e86655-8a9a-4544-ac12-4aef42035b5f" Version="1.1.3" Language="en-US" Publisher="Liam Morrow" />
     <DisplayName>PowerMode</DisplayName>
     <Description xml:space="preserve">An extension that attempts to clone the power mode in Atom found here : https://atom.io/packages/activate-power-mode</Description>
     <License>LICENCE.txt</License>
+    <ReleaseNotes />
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.IntegratedShell" Version="[11.0, 14.0]" />
