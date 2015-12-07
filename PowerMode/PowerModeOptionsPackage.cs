@@ -48,8 +48,13 @@ namespace PowerMode
         public double AlphaRemoveAmount { get; set; } = 0.045;
 
         [Category("Power Mode")]
+        [DisplayName("Explosion Particle - get color from environment")]
+        [Description("Whether to get the color from the environment theme or not - overrides Explosion Particle Color value if set")]
+        public bool bGetColorFromEnvironment { get; set; } = false;
+
+        [Category("Power Mode")]
         [DisplayName("Explosion Particle Color")]
-        [Description("The color of the explosion particle")]
+        [Description("The color of the explosion particle - ignored if 'get color from environment' is set")]
         public Color Color { get; set; } = Colors.Black;
 
         [Category("Power Mode")]
@@ -96,6 +101,7 @@ namespace PowerMode
         {
             base.LoadSettingsFromStorage();
             ExplosionParticle.AlphaRemoveAmount = AlphaRemoveAmount;
+            ExplosionParticle.bGetColorFromEnvironment = bGetColorFromEnvironment;
             ExplosionParticle.Color = Color;
             ExplosionParticle.FrameDelay = FrameDelay;
             ExplosionParticle.Gravity = Gravity;
@@ -112,6 +118,7 @@ namespace PowerMode
             base.SaveSettingsToStorage();
 
             ExplosionParticle.AlphaRemoveAmount = AlphaRemoveAmount;
+            ExplosionParticle.bGetColorFromEnvironment = bGetColorFromEnvironment;
             ExplosionParticle.Color = Color;
             ExplosionParticle.FrameDelay = FrameDelay;
             ExplosionParticle.Gravity = Gravity;
