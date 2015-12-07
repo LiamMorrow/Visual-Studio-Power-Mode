@@ -76,8 +76,7 @@ namespace PowerMode
         public double Gravity
         {
             get { return ExplosionParticle.Gravity; }
-            set { ExplosionParticle.Gravity = value; }
-        }
+            set { ExplosionParticle.Gravity = value; } }
 
         [Category("Power Mode")]
         [DisplayName("Max Particle Count")]
@@ -136,7 +135,6 @@ namespace PowerMode
         public override void SaveSettingsToStorage()
         {
             base.SaveSettingsToStorage();
-
             LoadSettingsFromStorage();
         }
     }
@@ -190,7 +188,6 @@ namespace PowerMode
         /// </summary>
         protected override void Initialize()
         {
-            
             base.Initialize();
         }
 
