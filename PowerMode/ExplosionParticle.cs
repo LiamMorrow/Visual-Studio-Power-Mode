@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,6 +35,7 @@ using System.Windows.Media.Animation;
 using EnvDTE;
 using Microsoft.VisualStudio.Text.Editor;
 using PowerMode.Extensions;
+using System.ComponentModel;
 
 namespace PowerMode
 {
@@ -53,9 +55,7 @@ namespace PowerMode
 
         public static double AlphaRemoveAmount { get; set; } = 0.045;
 
-        public static bool bGetColorFromEnvironment { get; set; } = false;
-
-        public static Color Color { get; set; } = Colors.Black;
+        public static Color Color { get; set; } = Colors.Red;
 
         public static int FrameDelay { get; set; } = 17;
 
@@ -101,11 +101,6 @@ namespace PowerMode
             var upVelocity = Random.NextDouble() * MaxUpVelocity;
             var leftVelocity = Random.NextDouble() * MaxSideVelocity * Random.NextSignSwap();
             var brush = new SolidColorBrush(Color);
-            if (bGetColorFromEnvironment)
-            {
-                var svc = Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(Microsoft.VisualStudio.Shell.Interop.SVsUIShell)) as Microsoft.VisualStudio.Shell.Interop.IVsUIShell5;
-                brush = new SolidColorBrush(Microsoft.VisualStudio.Shell.VsColors.GetThemedWPFColor(svc, Microsoft.VisualStudio.PlatformUI.EnvironmentColors.PanelTextColorKey));
-            }
             brush.Freeze();
             var drawing = new GeometryDrawing(brush, null, geometry);
             drawing.Freeze();
@@ -153,5 +148,6 @@ namespace PowerMode
             }
             ParticleCount--;
         }
+        
     }
 }
