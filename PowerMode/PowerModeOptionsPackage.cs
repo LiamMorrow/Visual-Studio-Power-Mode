@@ -45,81 +45,99 @@ namespace PowerMode
         [Category("Power Mode")]
         [DisplayName("Alpha Decrement Amount")]
         [Description("The amount of alpha removed every frame.")]
-        public double AlphaRemoveAmount { get; set; } = 0.045;
+        public double AlphaRemoveAmount
+        {
+            get { return ExplosionParticle.AlphaRemoveAmount; }
+            set { ExplosionParticle.AlphaRemoveAmount = value; }
+        }
 
         [Category("Power Mode")]
         [DisplayName("Explosion Particle Color")]
         [Description("The color of the explosion particle")]
-        public Color Color { get; set; } = Colors.Black;
+        public Color Color
+        {
+            get { return ExplosionParticle.Color; }
+            set { ExplosionParticle.Color = value; }
+        } 
 
         [Category("Power Mode")]
         [Description("Delay between Frames (milliseconds)")]
         [DisplayName("Frame Delay")]
-        public int FrameDelay { get; set; } = 17;
+        public int FrameDelay
+        {
+            get { return ExplosionParticle.FrameDelay; }
+            set { ExplosionParticle.FrameDelay = value; }
+        }
 
         [Category("Power Mode")]
         [DisplayName("Gravity")]
         [Description("The strength of the gravity")]
-        public double Gravity { get; set; } = 0.3;
+        
+        public double Gravity
+        {
+            get { return ExplosionParticle.Gravity; }
+            set { ExplosionParticle.Gravity = value; }
+        }
 
         [Category("Power Mode")]
         [DisplayName("Max Particle Count")]
         [Description("The maximum amount of particles at one time")]
-        public int MaxParticleCount { get; set; } = int.MaxValue;
+        public int MaxParticleCount
+        {
+            get { return ExplosionParticle.MaxParticleCount; }
+            set { ExplosionParticle.MaxParticleCount = value; }
+        }
 
         [Category("Power Mode")]
         [DisplayName("Max Side Velocity")]
         [Description("The maximum sideward velocity of the particles")]
-        public double MaxSideVelocity { get; set; } = 2;
+        public double MaxSideVelocity
+        {
+            get { return ExplosionParticle.MaxSideVelocity; }
+            set { ExplosionParticle.MaxSideVelocity = value; }
+        }
 
         [Category("Power Mode")]
         [DisplayName("Max Upwards Velocity")]
         [Description("The maximum upward velocity of the particles")]
-        public double MaxUpVelocity { get; set; } = 10;
+        public double MaxUpVelocity
+        {
+            get { return ExplosionParticle.MaxUpVelocity; }
+            set { ExplosionParticle.MaxUpVelocity = value; }
+        }
 
         [Category("Power Mode")]
         [DisplayName("Particles Enabled")]
         [Description("Sets whether the particles are enabled")]
-        public bool ParticlesEnabled { get; set; } = true;
+        public bool ParticlesEnabled
+        {
+            get { return ExplosionViewportAdornment.ParticlesEnabled; }
+            set { ExplosionViewportAdornment.ParticlesEnabled = value; }
+        }
 
         [Category("Power Mode")]
         [DisplayName("Screen Shake")]
         [Description("Sets whether the screen shakes")]
-        public bool ShakeEnabled { get; set; } = true;
+        public bool ShakeEnabled
+        {
+            get { return ExplosionViewportAdornment.ShakeEnabled; }
+            set { ExplosionViewportAdornment.ShakeEnabled = value; }
+        }
 
         [Category("Power Mode")]
         [DisplayName("Start Alpha")]
         [Description("The starting opacity of the particle. Affects lifetime.")]
-        public double StartAlpha { get; set; } = 0.9;
-
-        public override void LoadSettingsFromStorage()
+        public double StartAlpha
         {
-            base.LoadSettingsFromStorage();
-            ExplosionParticle.AlphaRemoveAmount = AlphaRemoveAmount;
-            ExplosionParticle.Color = Color;
-            ExplosionParticle.FrameDelay = FrameDelay;
-            ExplosionParticle.Gravity = Gravity;
-            ExplosionParticle.MaxParticleCount = MaxParticleCount;
-            ExplosionParticle.MaxSideVelocity = MaxSideVelocity;
-            ExplosionParticle.MaxUpVelocity = MaxUpVelocity;
-            ExplosionParticle.StartAlpha = StartAlpha;
-            ExplosionViewportAdornment.ShakeEnabled = ShakeEnabled;
-            ExplosionViewportAdornment.ParticlesEnabled = ParticlesEnabled;
+            get { return ExplosionParticle.StartAlpha; }
+            set { ExplosionParticle.StartAlpha = value; }
         }
 
         public override void SaveSettingsToStorage()
         {
             base.SaveSettingsToStorage();
-            AlphaRemoveAmount = ExplosionParticle.AlphaRemoveAmount;
-            Color = ExplosionParticle.Color;
-            FrameDelay = ExplosionParticle.FrameDelay;
-            Gravity = ExplosionParticle.Gravity;
-            MaxParticleCount = ExplosionParticle.MaxParticleCount;
-            MaxSideVelocity = ExplosionParticle.MaxSideVelocity;
-            MaxUpVelocity = ExplosionParticle.MaxUpVelocity;
-            StartAlpha = ExplosionParticle.StartAlpha;
-            ShakeEnabled = ExplosionViewportAdornment.ShakeEnabled;
-            ParticlesEnabled = ExplosionViewportAdornment.ParticlesEnabled;
+
+            LoadSettingsFromStorage();
         }
     }
 
@@ -172,6 +190,7 @@ namespace PowerMode
         /// </summary>
         protected override void Initialize()
         {
+            
             base.Initialize();
         }
 

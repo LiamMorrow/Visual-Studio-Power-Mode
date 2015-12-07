@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,6 +35,7 @@ using System.Windows.Media.Animation;
 using EnvDTE;
 using Microsoft.VisualStudio.Text.Editor;
 using PowerMode.Extensions;
+using System.ComponentModel;
 
 namespace PowerMode
 {
@@ -53,7 +55,7 @@ namespace PowerMode
 
         public static double AlphaRemoveAmount { get; set; } = 0.045;
 
-        public static Color Color { get; set; } = Colors.Black;
+        public static Color Color { get; set; } = Colors.Red;
 
         public static int FrameDelay { get; set; } = 17;
 
@@ -146,5 +148,6 @@ namespace PowerMode
             }
             ParticleCount--;
         }
+        
     }
 }
