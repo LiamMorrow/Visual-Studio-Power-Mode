@@ -52,6 +52,15 @@ namespace PowerMode
         }
 
         [Category("Power Mode")]
+        [DisplayName("Explosion Particle - get color from environment")]
+        [Description("Whether to get the color from the environment theme or not - overrides Explosion Particle Color value if set")]
+        public bool bGetColorFromEnvironment
+        {
+            get { return ExplosionParticle.bGetColorFromEnvironment; }
+            set { ExplosionParticle.bGetColorFromEnvironment = value; }
+        }
+
+        [Category("Power Mode")]
         [DisplayName("Explosion Particle Color")]
         [Description("The color of the explosion particle")]
         public Color Color
@@ -130,12 +139,6 @@ namespace PowerMode
         {
             get { return ExplosionParticle.StartAlpha; }
             set { ExplosionParticle.StartAlpha = value; }
-        }
-
-        public override void SaveSettingsToStorage()
-        {
-            base.SaveSettingsToStorage();
-            LoadSettingsFromStorage();
         }
     }
 
