@@ -13,7 +13,7 @@ Added ability to get color from environment
 ###Known Issues  
 Settings don't load when visual studio is opened, working on it.  For now, just open and close options.
 
-Thanks to Parnic for his work and providing the build
+Thanks to Parnic and JeanPhilippeKernel for their work and providing the build
 
 ##Link to built Extension:  
 https://visualstudiogallery.msdn.microsoft.com/936788cc-7213-4d48-93ae-045694781214
