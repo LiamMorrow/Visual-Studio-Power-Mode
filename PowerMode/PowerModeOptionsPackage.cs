@@ -67,7 +67,15 @@ namespace PowerMode
         {
             get { return ExplosionParticle.Color; }
             set { ExplosionParticle.Color = value; }
-        } 
+        }
+        [Category("Power Mode")]
+        [DisplayName("Explosion Particle Randomized Color")]
+        [Description("Whether to use a random color. Overrides Explosion Particle Color if set.")]
+        public bool RandomColor
+        {
+            get { return ExplosionParticle.RandomColor; }
+            set { ExplosionParticle.RandomColor = value; }
+        }
 
         [Category("Power Mode")]
         [Description("Delay between Frames (milliseconds)")]

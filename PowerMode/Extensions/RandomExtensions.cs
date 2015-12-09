@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace PowerMode.Extensions
 {
@@ -34,6 +35,13 @@ namespace PowerMode.Extensions
         public static int NextSignSwap(this Random random)
         {
             return random.Next(0, 2) == 1 ? 1 : -1;
+        }
+        public static Color NextColor(this Random random)
+        {
+            byte[] bytes = new byte[3];
+            random.NextBytes(bytes);
+
+            return Color.FromRgb(bytes[0], bytes[1], bytes[2]);
         }
     }
 }
