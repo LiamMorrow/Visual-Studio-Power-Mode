@@ -160,7 +160,7 @@ namespace PowerMode
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#1110", "#1112", "1.0.2", IconResourceID = 1400)] // Info on this package for Help/About
+    [InstalledProductRegistration("#1110", "#1112", "1.1.4", IconResourceID = 1400)] // Info on this package for Help/About
     [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideOptionPage(typeof(OptionPageGrid),
