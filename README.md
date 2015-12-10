@@ -6,12 +6,9 @@ Unfortunately, I couldn't figure out how to get the current text colour so for n
 
 Settings can be found in the Tools > options > Power Mode menu.  
 
-##1.1.4 Release Notes  
-Added VS 2012/13 support  
-Added ability to get color from environment
-
-###Known Issues  
-Settings don't load when visual studio is opened, working on it.  For now, just open and close options.
+##1.1.5 Release Notes  
+Fixed settings loading issue
+Added random colour options
 
 Thanks to Parnic and JeanPhilippeKernel for their work and providing the build
 
