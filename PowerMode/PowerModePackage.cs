@@ -37,6 +37,14 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.Win32;
+using System;
+using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace PowerMode
 {
@@ -60,26 +68,35 @@ namespace PowerMode
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#1110", "#1112", "1.1.4", IconResourceID = 1400)] // Info on this package for Help/About
-    [Guid(PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    [ProvideOptionPage(typeof(OptionPageGeneral),
-    "Power Mode", "General", 0, 0, true)]
-    public sealed class PowerModeOptionsPackage : Package
+    [ProvideOptionPage(typeof(OptionPageGeneral), "PowerMode", "General", 1116, 1113, true)]
+    [ProvideService(typeof(SPowerMode))]
+    [Guid(PackageGuidString)]
+    public sealed class PowerModePackage : Package
     {
         /// <summary>
         /// PowerModeOptionsPackage GUID string.
         /// </summary>
         public const string PackageGuidString = "4e687eae-ae26-4139-b888-a0ae8c2e16ff";
+        private PowerModeService Service;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PowerModeOptionsPackage"/> class.
+        /// Initializes a new instance of the <see cref="PowerModePackage"/> class.
         /// </summary>
-        public PowerModeOptionsPackage()
+        public PowerModePackage()
         {
             // Inside this method you can place any initialization code that does not require
             // any Visual Studio service because at this point the package object is created but
             // not sited yet inside Visual Studio environment. The place to do all the other
             // initialization is the Initialize method.
+        }
+
+        public OptionPageGeneral General
+        {
+            get
+            {
+                return (OptionPageGeneral)GetDialogPage(typeof(OptionPageGeneral));
+            }
         }
 
         #region Package Members
@@ -91,6 +108,9 @@ namespace PowerMode
         protected override void Initialize()
         {
             base.Initialize();
+
+            Service = new PowerModeService(this);
+            ((IServiceContainer)this).AddService(typeof(SPowerMode), Service, true);
         }
 
         #endregion Package Members
