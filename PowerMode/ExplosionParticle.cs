@@ -56,6 +56,7 @@ namespace PowerMode
         public static bool bGetColorFromEnvironment { get; set; } = false;
 
         public static Color Color { get; set; } = Colors.Black;
+        public static bool RandomColor { get; set; } = false;
 
         public static int FrameDelay { get; set; } = 17;
 
@@ -100,11 +101,20 @@ namespace PowerMode
             var alpha = StartAlpha;
             var upVelocity = Random.NextDouble() * MaxUpVelocity;
             var leftVelocity = Random.NextDouble() * MaxSideVelocity * Random.NextSignSwap();
-            var brush = new SolidColorBrush(Color);
+            SolidColorBrush brush = null;
+         
             if (bGetColorFromEnvironment)
             {
                 var svc = Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(Microsoft.VisualStudio.Shell.Interop.SVsUIShell)) as Microsoft.VisualStudio.Shell.Interop.IVsUIShell5;
                 brush = new SolidColorBrush(Microsoft.VisualStudio.Shell.VsColors.GetThemedWPFColor(svc, Microsoft.VisualStudio.PlatformUI.EnvironmentColors.PanelTextColorKey));
+            }
+            else if (RandomColor)
+            {
+                brush = new SolidColorBrush(Random.NextColor());
+            }
+            else
+            {
+                brush = new SolidColorBrush(Color);
             }
             brush.Freeze();
             var drawing = new GeometryDrawing(brush, null, geometry);
