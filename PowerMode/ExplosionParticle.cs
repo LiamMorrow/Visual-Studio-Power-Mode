@@ -33,6 +33,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using EnvDTE;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Shell;
 using PowerMode.Extensions;
 
 namespace PowerMode
@@ -46,7 +47,7 @@ namespace PowerMode
         private readonly IAdornmentLayer adornmentLayer;
         private double _left, _top;
 
-        private PowerModeOptionsPackage _optionsPackage;
+        private PowerModePackage _optionsPackage;
         private Rect _rect = new Rect(-5, -5, 5, 5);
 
         private EllipseGeometry geometry;
@@ -93,11 +94,35 @@ namespace PowerMode
             geometry = new EllipseGeometry(_rect);
         }
 
-        public async Task Explode()
+        public async System.Threading.Tasks.Task Explode()
         {
             if (ParticleCount > MaxParticleCount)
                 return;
             ParticleCount++;
+
+            // TODO: rewrite this part for better design & performance
+            // store service & package as static member.
+
+            var service = ServiceProvider.GlobalProvider.GetService(typeof(SPowerMode));
+            var pm_service = service as IPowerMode;
+            var package = pm_service.Package;
+            var page = package.General;
+
+            ExplosionParticle.Color = page.Color;
+            ExplosionParticle.AlphaRemoveAmount = page.AlphaRemoveAmount;
+            ExplosionParticle.bGetColorFromEnvironment = bGetColorFromEnvironment;
+            ExplosionParticle.RandomColor = page.RandomColor;
+            ExplosionParticle.FrameDelay = page.FrameDelay;
+            ExplosionParticle.Gravity = page.Gravity;
+            ExplosionParticle.MaxParticleCount = page.MaxParticleCount;
+            ExplosionParticle.MaxSideVelocity = page.MaxSideVelocity;
+            ExplosionParticle.MaxUpVelocity = page.MaxUpVelocity;
+            //ExplosionParticle.ParticlesEnabled = page.ParticlesEnabled;
+            //ExplosionParticle.ShakeEnabled = page.ShakeEnabled;
+            ExplosionParticle.StartAlpha = page.StartAlpha;
+
+            // End of TODO.
+
             var alpha = StartAlpha;
             var upVelocity = Random.NextDouble() * MaxUpVelocity;
             var leftVelocity = Random.NextDouble() * MaxSideVelocity * Random.NextSignSwap();
@@ -145,7 +170,7 @@ namespace PowerMode
                         null,
                         image,
                         null);
-                    await Task.Delay(FrameDelay);
+                    await System.Threading.Tasks.Task.Delay(FrameDelay);
                     adornmentLayer.RemoveAdornment(image);
                 }
                 catch
