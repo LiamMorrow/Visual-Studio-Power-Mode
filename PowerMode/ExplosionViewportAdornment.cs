@@ -68,7 +68,7 @@ namespace PowerMode
 
         public int ComboStreak { get; set; }
 
-        public static int ComboActivationThreshold { get; set; } = 200;
+        public static int ComboActivationThreshold { get; set; } = 0;
 
         public static int ComboTimeout { get; set; } = 10000; // In milliseconds
 
@@ -122,25 +122,27 @@ namespace PowerMode
 
         private async Task HandleChange(int delta)
         {
-
-            if (ParticlesEnabled && ComboCheck())
+            if (ComboCheck())
             {
-                for (var i = 0; i < 10; i++)
+                if (ParticlesEnabled)
                 {
-                    var explosion = new ExplosionParticle(_adornmentLayer,
-                        (DTE)Package.GetGlobalService(typeof(DTE)),
-                        _view.Caret.Top,
-                        _view.Caret.Left);
-                    var expl = explosion.Explode();
+                    for (var i = 0; i < 10; i++)
+                    {
+                        var explosion = new ExplosionParticle(_adornmentLayer,
+                            (DTE)Package.GetGlobalService(typeof(DTE)),
+                            _view.Caret.Top,
+                            _view.Caret.Left);
+                        var expl = explosion.Explode();
 
 #pragma warning disable CS4014 // Don't care about return
-                    Task.Run(() => expl);
+                        Task.Run(() => expl);
 #pragma warning restore CS4014
+                    }
                 }
-            }
-            if (ShakeEnabled)
-            {
-                await Shake(delta);
+                if (ShakeEnabled)
+                {
+                    await Shake(delta);
+                }
             }
         }
 
