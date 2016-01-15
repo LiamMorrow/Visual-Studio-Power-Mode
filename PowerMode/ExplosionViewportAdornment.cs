@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.VisualStudio.Text;
@@ -72,6 +73,8 @@ namespace PowerMode
 
         public static int ComboTimeout { get; set; } = 10000; // In milliseconds
 
+        private const int MinMsBetweenShakes = 10;
+
         private static Random Random
         {
             get
@@ -104,18 +107,20 @@ namespace PowerMode
 
         private async void FormatCode(TextContentChangedEventArgs e)
         {
-            if (e.Changes != null)
+            if ((DateTime.Now - LastKeyPress).TotalMilliseconds < MinMsBetweenShakes)
             {
-                for (int i = 0; i < e.Changes.Count; i++)
+                return;
+            }
+
+            if (e.Changes != null && e.Changes.Count > 0)
+            {
+                try
                 {
-                    try
-                    {
-                        await HandleChange(e.Changes[i].Delta);
-                    }
-                    catch
-                    {
-                        //Ignore, not critical that we catch it
-                    }
+                    await HandleChange(e.Changes.Sum(x => x.Delta));
+                }
+                catch
+                {
+                    //Ignore, not critical that we catch it
                 }
             }
         }
