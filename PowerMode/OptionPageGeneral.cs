@@ -149,6 +149,15 @@ namespace PowerMode
             get { return ExplosionParticle.StartAlpha; }
             set { ExplosionParticle.StartAlpha = value; }
         }
+
+        [Category("Power Mode")]
+        [DisplayName("Combo Threshold")]
+        [Description("The number of keypresses required to turn on Power Mode. Set to 0 to always enable Power Mode.")]
+        public int ComboThreshold
+        {
+            get { return ExplosionViewportAdornment.ComboActivationThreshold; }
+            set { ExplosionViewportAdornment.ComboActivationThreshold = value; }
+        }
     }
 
 }

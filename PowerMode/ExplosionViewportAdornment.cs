@@ -60,6 +60,18 @@ namespace PowerMode
 
         public int MaxShakeAmount { get; set; } = 5;
 
+        /// <summary>
+        /// Store the last time the user pressed a key. 
+        /// To maintain a combo, the user must keep pressing keys at least every x seconds.
+        /// </summary>
+        public DateTime LastKeyPress { get; set; } = DateTime.Now;
+
+        public int ComboStreak { get; set; }
+
+        public static int ComboActivationThreshold { get; set; } = 200;
+
+        public static int ComboTimeout { get; set; } = 10000; // In milliseconds
+
         private static Random Random
         {
             get
@@ -110,7 +122,8 @@ namespace PowerMode
 
         private async Task HandleChange(int delta)
         {
-            if (ParticlesEnabled)
+
+            if (ParticlesEnabled && ComboCheck())
             {
                 for (var i = 0; i < 10; i++)
                 {
@@ -144,6 +157,25 @@ namespace PowerMode
                 _view.ViewportLeft -= leftAmount;
                 _view.ViewScroller.ScrollViewportVerticallyByPixels(-topAmount);
             }
+        }
+
+        /// <summary>
+        /// Keep track of how many keypresses the user has done and returns whether power mode should be activated for each change.
+        /// </summary>
+        /// <returns>True if power mode should be activated for this change. False if power mode should be ignored for this change.</returns>
+        private bool ComboCheck()
+        {
+            var now = DateTime.Now;
+            ComboStreak++;
+
+            if (LastKeyPress.AddMilliseconds(ComboTimeout) < now) // More than x ms since last key-press. Combo has been broken.
+            {
+                ComboStreak = 1;
+            }
+
+            LastKeyPress = now;
+            var activatePowerMode = ComboStreak >= ComboActivationThreshold; // Activate powermode if number of keypresses exceeds the threshold for activation
+            return activatePowerMode; // Perhaps different levels for power-mode intensity? First just particles, then screen shake?
         }
 
         private void TextBuffer_Changed(object sender, TextContentChangedEventArgs e)
