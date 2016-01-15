@@ -94,7 +94,7 @@ namespace PowerMode
             geometry = new EllipseGeometry(_rect);
         }
 
-        public async System.Threading.Tasks.Task Explode()
+        public async void Explode()
         {
             if (ParticleCount > MaxParticleCount)
                 return;

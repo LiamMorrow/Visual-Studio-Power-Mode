@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.VisualStudio.Text;
@@ -60,6 +61,8 @@ namespace PowerMode
 
         public int MaxShakeAmount { get; set; } = 5;
 
+        private bool isShaking;
+
         private static Random Random
         {
             get
@@ -92,23 +95,29 @@ namespace PowerMode
 
         private async void FormatCode(TextContentChangedEventArgs e)
         {
-            if (e.Changes != null)
+            if (e.Changes != null && (e.EditTag == null || e.EditTag.GetType().Name == "TextEditAction"))
             {
                 for (int i = 0; i < e.Changes.Count; i++)
                 {
                     try
                     {
-                        await HandleChange(e.Changes[i].Delta);
+                        HandleChange();
                     }
                     catch
                     {
                         //Ignore, not critical that we catch it
                     }
                 }
+                if (ShakeEnabled && !isShaking) // Prevent and additional shaking when we are already shaking
+                {
+                    isShaking = true;
+                    await Shake(e.Changes.Sum(x=>x.Delta)); // do all shaking at once
+                    isShaking = false;
+                }
             }
         }
 
-        private async Task HandleChange(int delta)
+        private void HandleChange()
         {
             if (ParticlesEnabled)
             {
@@ -118,16 +127,8 @@ namespace PowerMode
                         (DTE)Package.GetGlobalService(typeof(DTE)),
                         _view.Caret.Top,
                         _view.Caret.Left);
-                    var expl = explosion.Explode();
-
-#pragma warning disable CS4014 // Don't care about return
-                    Task.Run(() => expl);
-#pragma warning restore CS4014
+                    explosion.Explode();
                 }
-            }
-            if (ShakeEnabled)
-            {
-                await Shake(delta);
             }
         }
 
