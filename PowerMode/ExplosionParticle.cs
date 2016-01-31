@@ -111,10 +111,10 @@ namespace PowerMode
             adornmentLayer = adornment;
             _service = service;
             _afterExplode = afterExplode;
-            InitilizeOptions();
+            InitializeOptions();
         }
 
-        private void InitilizeOptions()
+        private void InitializeOptions()
         {
             Color brushColor;
             if (bGetColorFromEnvironment)
@@ -178,7 +178,7 @@ namespace PowerMode
             if (ParticleCount > MaxParticleCount)
                 return;
             ParticleCount++;
-            if (_optionsVersion != OptionPageGeneral.OptionsVersion) InitilizeOptions();
+            if (_optionsVersion != OptionPageGeneral.OptionsVersion) InitializeOptions();
             var upVelocity = Random.NextDouble() * MaxUpVelocity;
             var leftVelocity = Random.NextDouble() * MaxSideVelocity * Random.NextSignSwap();
             _leftAnimation.From = left;
