@@ -42,22 +42,40 @@ namespace PowerMode
 {
     public class OptionPageGeneral : DialogPage
     {
+        /// <summary>
+        /// use this to force reloading of settings
+        /// each tiem a setting change shere we increment the number
+        /// each explosion particle checks it's version of options against
+        /// this one to check for updates
+        /// </summary>
+        public static uint OptionsVersion = 0;
+
         [Category("Power Mode")]
         [DisplayName("Alpha Decrement Amount")]
         [Description("The amount of alpha removed every frame.")]
         public double AlphaRemoveAmount
         {
             get { return ExplosionParticle.AlphaRemoveAmount; }
-            set { ExplosionParticle.AlphaRemoveAmount = value; }
+            set
+            {
+                ExplosionParticle.AlphaRemoveAmount = value;
+                OptionsVersion++;
+            }
         }
 
         [Category("Power Mode")]
         [DisplayName("Explosion Particle - get color from environment")]
-        [Description("Whether to get the color from the environment theme or not - overrides Explosion Particle Color value if set")]
+        [Description(
+            "Whether to get the color from the environment theme or not - overrides Explosion Particle Color value if set"
+            )]
         public bool bGetColorFromEnvironment
         {
             get { return ExplosionParticle.bGetColorFromEnvironment; }
-            set { ExplosionParticle.bGetColorFromEnvironment = value; }
+            set
+            {
+                ExplosionParticle.bGetColorFromEnvironment = value;
+                OptionsVersion++;
+            }
         }
 
         [Category("Power Mode")]
@@ -66,15 +84,24 @@ namespace PowerMode
         public Color Color
         {
             get { return ExplosionParticle.Color; }
-            set { ExplosionParticle.Color = value; }
+            set
+            {
+                ExplosionParticle.Color = value;
+                OptionsVersion++;
+            }
         }
+
         [Category("Power Mode")]
         [DisplayName("Explosion Particle Randomized Color")]
         [Description("Whether to use a random color. Overrides Explosion Particle Color if set.")]
         public bool RandomColor
         {
             get { return ExplosionParticle.RandomColor; }
-            set { ExplosionParticle.RandomColor = value; }
+            set
+            {
+                ExplosionParticle.RandomColor = value;
+                OptionsVersion++;
+            }
         }
 
         [Category("Power Mode")]
@@ -83,17 +110,24 @@ namespace PowerMode
         public int FrameDelay
         {
             get { return ExplosionParticle.FrameDelay; }
-            set { ExplosionParticle.FrameDelay = value; }
+            set
+            {
+                ExplosionParticle.FrameDelay = value;
+                OptionsVersion++;
+            }
         }
 
         [Category("Power Mode")]
         [DisplayName("Gravity")]
         [Description("The strength of the gravity")]
-
         public double Gravity
         {
             get { return ExplosionParticle.Gravity; }
-            set { ExplosionParticle.Gravity = value; }
+            set
+            {
+                ExplosionParticle.Gravity = value;
+                OptionsVersion++;
+            }
         }
 
         [Category("Power Mode")]
@@ -106,12 +140,25 @@ namespace PowerMode
         }
 
         [Category("Power Mode")]
+        [DisplayName("Particles per keystroke")]
+        [Description("The number of particles to show each key press")]
+        public uint ParticlePerPress
+        {
+            get { return ExplosionViewportAdornment.ParticlePerPress; }
+            set { ExplosionViewportAdornment.ParticlePerPress = value; }
+        }
+
+        [Category("Power Mode")]
         [DisplayName("Max Side Velocity")]
         [Description("The maximum sideward velocity of the particles")]
         public double MaxSideVelocity
         {
             get { return ExplosionParticle.MaxSideVelocity; }
-            set { ExplosionParticle.MaxSideVelocity = value; }
+            set
+            {
+                ExplosionParticle.MaxSideVelocity = value;
+                OptionsVersion++;
+            }
         }
 
         [Category("Power Mode")]
@@ -120,7 +167,11 @@ namespace PowerMode
         public double MaxUpVelocity
         {
             get { return ExplosionParticle.MaxUpVelocity; }
-            set { ExplosionParticle.MaxUpVelocity = value; }
+            set
+            {
+                ExplosionParticle.MaxUpVelocity = value;
+                OptionsVersion++;
+            }
         }
 
         [Category("Power Mode")]
@@ -147,7 +198,11 @@ namespace PowerMode
         public double StartAlpha
         {
             get { return ExplosionParticle.StartAlpha; }
-            set { ExplosionParticle.StartAlpha = value; }
+            set
+            {
+                ExplosionParticle.StartAlpha = value;
+                OptionsVersion++;
+            }
         }
 
         [Category("Power Mode")]
@@ -159,5 +214,4 @@ namespace PowerMode
             set { ExplosionViewportAdornment.ComboActivationThreshold = value; }
         }
     }
-
 }
