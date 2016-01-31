@@ -138,9 +138,9 @@ namespace PowerMode
             drawingImage.Freeze();
             _image = new Image
             {
-                Source = drawingImage
+                Source = drawingImage,
+                Visibility = Visibility.Hidden
             };
-            _image.Visibility = Visibility.Hidden;
             // Add the image to the adornment layer and make it relative to the viewport
             adornmentLayer.AddAdornment(AdornmentPositioningBehavior.ViewportRelative,
                 null,
@@ -152,7 +152,10 @@ namespace PowerMode
             var timeSpan = TimeSpan.FromMilliseconds(FrameDelay * _iterations);
 
             _leftAnimation = new DoubleAnimation();
+
             _topAnimation = new DoubleAnimation();
+            _topAnimation.EasingFunction = new BackEase {Amplitude = Gravity * 35};
+
             _opacityAnimation = new DoubleAnimation();
             _opacityAnimation.From = StartAlpha;
             _opacityAnimation.To = StartAlpha - (_iterations * AlphaRemoveAmount);
@@ -178,11 +181,10 @@ namespace PowerMode
             if (_optionsVersion != OptionPageGeneral.OptionsVersion) InitilizeOptions();
             var upVelocity = Random.NextDouble() * MaxUpVelocity;
             var leftVelocity = Random.NextDouble() * MaxSideVelocity * Random.NextSignSwap();
-
             _leftAnimation.From = left;
             _leftAnimation.To = left - (_iterations * leftVelocity);
             _topAnimation.From = top;
-            _topAnimation.To = top - (_iterations * upVelocity);
+            _topAnimation.By = -upVelocity;
             _image.Visibility = Visibility.Visible;
             _image.BeginAnimation(Canvas.LeftProperty, _leftAnimation);
             _image.BeginAnimation(Canvas.TopProperty, _topAnimation);
