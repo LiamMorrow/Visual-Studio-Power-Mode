@@ -23,41 +23,62 @@ SOFTWARE.
 */
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using EnvDTE;
-using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.Text.Editor;
 using PowerMode.Extensions;
 
 namespace PowerMode
 {
     public class ExplosionParticle
     {
+        static ExplosionParticle()
+        {
+            var service = ServiceProvider.GlobalProvider.GetService(typeof (SPowerMode)) as IPowerMode;
+            if (service == null) return;
+            var page = service.Package.General;
+
+            Color = page.Color;
+            AlphaRemoveAmount = page.AlphaRemoveAmount;
+            bGetColorFromEnvironment = bGetColorFromEnvironment;
+            RandomColor = page.RandomColor;
+            FrameDelay = page.FrameDelay;
+            Gravity = page.Gravity;
+            MaxParticleCount = page.MaxParticleCount;
+            MaxSideVelocity = page.MaxSideVelocity;
+            MaxUpVelocity = page.MaxUpVelocity;
+            StartAlpha = page.StartAlpha;
+        }
+
         [ThreadStatic]
         private static Random _random;
 
         private readonly DTE _service;
+        private readonly Action<ExplosionParticle> _afterExplode;
         private readonly IAdornmentLayer adornmentLayer;
-        private double _left, _top;
 
-        private PowerModePackage _optionsPackage;
-        private Rect _rect = new Rect(-5, -5, 5, 5);
+        private static Rect _rect = new Rect(-5, -5, 5, 5);
 
-        private EllipseGeometry geometry;
+        private static EllipseGeometry geometry = new EllipseGeometry(_rect);
+        private Image _image;
+        private DoubleAnimation _leftAnimation;
+        private DoubleAnimation _topAnimation;
+        private DoubleAnimation _opacityAnimation;
+        private double _iterations;
+        private uint _optionsVersion = 0;
 
         public static double AlphaRemoveAmount { get; set; } = 0.045;
 
-        public static bool bGetColorFromEnvironment { get; set; } = false;
+        public static bool bGetColorFromEnvironment { get; set; }
 
         public static Color Color { get; set; } = Colors.Black;
-        public static bool RandomColor { get; set; } = false;
+        public static bool RandomColor { get; set; }
 
         public static int FrameDelay { get; set; } = 17;
 
@@ -85,107 +106,90 @@ namespace PowerMode
             }
         }
 
-        public ExplosionParticle(IAdornmentLayer adornment, DTE service, double top, double left)
+        public ExplosionParticle(IAdornmentLayer adornment, DTE service, Action<ExplosionParticle> afterExplode)
         {
-            _left = left;
             adornmentLayer = adornment;
             _service = service;
-            _top = top;
-            geometry = new EllipseGeometry(_rect);
+            _afterExplode = afterExplode;
+            InitializeOptions();
         }
 
-        public async System.Threading.Tasks.Task Explode()
+        private void InitializeOptions()
         {
-            if (ParticleCount > MaxParticleCount)
-                return;
-            ParticleCount++;
-
-            // TODO: rewrite this part for better design & performance
-            // store service & package as static member.
-
-            var service = ServiceProvider.GlobalProvider.GetService(typeof(SPowerMode));
-            var pm_service = service as IPowerMode;
-            var package = pm_service.Package;
-            var page = package.General;
-
-            ExplosionParticle.Color = page.Color;
-            ExplosionParticle.AlphaRemoveAmount = page.AlphaRemoveAmount;
-            ExplosionParticle.bGetColorFromEnvironment = bGetColorFromEnvironment;
-            ExplosionParticle.RandomColor = page.RandomColor;
-            ExplosionParticle.FrameDelay = page.FrameDelay;
-            ExplosionParticle.Gravity = page.Gravity;
-            ExplosionParticle.MaxParticleCount = page.MaxParticleCount;
-            ExplosionParticle.MaxSideVelocity = page.MaxSideVelocity;
-            ExplosionParticle.MaxUpVelocity = page.MaxUpVelocity;
-            //ExplosionParticle.ParticlesEnabled = page.ParticlesEnabled;
-            //ExplosionParticle.ShakeEnabled = page.ShakeEnabled;
-            ExplosionParticle.StartAlpha = page.StartAlpha;
-
-            // End of TODO.
-
-            var alpha = StartAlpha;
-            var upVelocity = Random.NextDouble() * MaxUpVelocity;
-            var leftVelocity = Random.NextDouble() * MaxSideVelocity * Random.NextSignSwap();
-            SolidColorBrush brush = null;
-         
+            Color brushColor;
             if (bGetColorFromEnvironment)
             {
-                var svc = Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(Microsoft.VisualStudio.Shell.Interop.SVsUIShell)) as Microsoft.VisualStudio.Shell.Interop.IVsUIShell5;
-                brush = new SolidColorBrush(Microsoft.VisualStudio.Shell.VsColors.GetThemedWPFColor(svc, Microsoft.VisualStudio.PlatformUI.EnvironmentColors.PanelTextColorKey));
+                var svc = Package.GetGlobalService(typeof (SVsUIShell)) as IVsUIShell5;
+                brushColor = (svc.GetThemedWPFColor(EnvironmentColors.PanelTextColorKey));
             }
             else if (RandomColor)
             {
-                brush = new SolidColorBrush(Random.NextColor());
+                brushColor = Random.NextColor();
             }
             else
             {
-                brush = new SolidColorBrush(Color);
+                brushColor = Color;
             }
-            brush.Freeze();
+            var brush = new SolidColorBrush(brushColor);
             var drawing = new GeometryDrawing(brush, null, geometry);
             drawing.Freeze();
 
             var drawingImage = new DrawingImage(drawing);
             drawingImage.Freeze();
-            var image = new Image
+            _image = new Image
             {
                 Source = drawingImage,
+                Visibility = Visibility.Hidden
             };
-            while (alpha >= AlphaRemoveAmount)
-            {
-                _left -= leftVelocity;
-                _top -= upVelocity;
-                upVelocity -= Gravity;
-                alpha -= AlphaRemoveAmount;
+            // Add the image to the adornment layer and make it relative to the viewport
+            adornmentLayer.AddAdornment(AdornmentPositioningBehavior.ViewportRelative,
+                null,
+                null,
+                _image,
+                null);
 
-                image.Opacity = alpha;
+            _iterations = StartAlpha / AlphaRemoveAmount;
+            var timeSpan = TimeSpan.FromMilliseconds(FrameDelay * _iterations);
 
-                Canvas.SetLeft(image, _left);
-                Canvas.SetTop(image, _top);
-                try
-                {
-                    // Add the image to the adornment layer and make it relative to the viewport
-                    adornmentLayer.AddAdornment(AdornmentPositioningBehavior.ViewportRelative,
-                        null,
-                        null,
-                        image,
-                        null);
-                    await System.Threading.Tasks.Task.Delay(FrameDelay);
-                    adornmentLayer.RemoveAdornment(image);
-                }
-                catch
-                {
-                    break;
-                }
-            }
-            try
-            {
-                adornmentLayer.RemoveAdornment(image);
-            }
-            catch
-            {
-                //Ignore all errors, not critical
-            }
+            _leftAnimation = new DoubleAnimation();
+
+            _topAnimation = new DoubleAnimation();
+            _topAnimation.EasingFunction = new BackEase {Amplitude = Gravity * 35};
+
+            _opacityAnimation = new DoubleAnimation();
+            _opacityAnimation.From = StartAlpha;
+            _opacityAnimation.To = StartAlpha - (_iterations * AlphaRemoveAmount);
+
+            _leftAnimation.Duration = timeSpan;
+            _topAnimation.Duration = timeSpan;
+            _opacityAnimation.Duration = timeSpan;
+            _opacityAnimation.Completed += (sender, args) => OnAnimationComplete();
+            _optionsVersion = OptionPageGeneral.OptionsVersion;
+        }
+
+        private void OnAnimationComplete()
+        {
+            _image.Visibility = Visibility.Hidden;
+            _afterExplode(this);
+        }
+
+        public void Explode(double top, double left)
+        {
+            if (ParticleCount > MaxParticleCount)
+                return;
+            ParticleCount++;
+            if (_optionsVersion != OptionPageGeneral.OptionsVersion) InitializeOptions();
+            var upVelocity = Random.NextDouble() * MaxUpVelocity;
+            var leftVelocity = Random.NextDouble() * MaxSideVelocity * Random.NextSignSwap();
+            _leftAnimation.From = left;
+            _leftAnimation.To = left - (_iterations * leftVelocity);
+            _topAnimation.From = top;
+            _topAnimation.By = -upVelocity;
+            _image.Visibility = Visibility.Visible;
+            _image.BeginAnimation(Canvas.LeftProperty, _leftAnimation);
+            _image.BeginAnimation(Canvas.TopProperty, _topAnimation);
+            _image.BeginAnimation(Image.OpacityProperty, _opacityAnimation);
+
             ParticleCount--;
         }
     }

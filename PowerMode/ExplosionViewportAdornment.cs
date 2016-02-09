@@ -23,6 +23,8 @@ SOFTWARE.
 */
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EnvDTE;
@@ -73,6 +75,8 @@ namespace PowerMode
 
         public static int ComboTimeout { get; set; } = 10000; // In milliseconds
 
+        public static uint ParticlePerPress { get; set; } = 10;
+
         private const int MinMsBetweenShakes = 10;
 
         private static Random Random
@@ -86,6 +90,7 @@ namespace PowerMode
                 return _random;
             }
         }
+        
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExplosionViewportAdornment"/> class.
@@ -103,6 +108,10 @@ namespace PowerMode
             _view.TextBuffer.Changed += TextBuffer_Changed;
             _view.TextBuffer.PostChanged += TextBuffer_PostChanged;
             _adornmentLayer = view.GetAdornmentLayer("ExplosionViewportAdornment");
+            _explosionParticles =
+                new ConcurrentBag<ExplosionParticle>(
+                    Enumerable.Repeat<Func<ExplosionParticle>>(NewParticle, (int) (ParticlePerPress * 2))
+                        .Select(result => result()));
         }
 
         private async void FormatCode(TextContentChangedEventArgs e)
@@ -125,23 +134,34 @@ namespace PowerMode
             }
         }
 
+        private ConcurrentBag<ExplosionParticle> _explosionParticles;
+
+        private ExplosionParticle GetExplosionParticle()
+        {
+            ExplosionParticle result;
+            if (!_explosionParticles.TryTake(out result))
+            {
+                result = NewParticle();
+            }
+            return result;
+        }
+
+        private ExplosionParticle NewParticle()
+        {
+            return new ExplosionParticle(_adornmentLayer,
+                    (DTE)Package.GetGlobalService(typeof(DTE)),
+                    particle => _explosionParticles.Add(particle));
+        }
+
         private async Task HandleChange(int delta)
         {
             if (ComboCheck())
             {
                 if (ParticlesEnabled)
                 {
-                    for (var i = 0; i < 10; i++)
+                    for (uint i = 0; i < ParticlePerPress; i++)
                     {
-                        var explosion = new ExplosionParticle(_adornmentLayer,
-                            (DTE)Package.GetGlobalService(typeof(DTE)),
-                            _view.Caret.Top,
-                            _view.Caret.Left);
-                        var expl = explosion.Explode();
-
-#pragma warning disable CS4014 // Don't care about return
-                        Task.Run(() => expl);
-#pragma warning restore CS4014
+                        GetExplosionParticle().Explode(_view.Caret.Top, _view.Caret.Left);
                     }
                 }
                 if (ShakeEnabled)
@@ -172,6 +192,11 @@ namespace PowerMode
         /// <returns>True if power mode should be activated for this change. False if power mode should be ignored for this change.</returns>
         private bool ComboCheck()
         {
+            if (ComboActivationThreshold == 0)
+            {
+                LastKeyPress = DateTime.Now;
+                return true;
+            }
             var now = DateTime.Now;
             ComboStreak++;
 
