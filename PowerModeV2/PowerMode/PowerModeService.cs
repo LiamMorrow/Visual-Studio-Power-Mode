@@ -24,17 +24,13 @@ SOFTWARE.
 
 namespace PowerMode
 {
-    class PowerModeService : SPowerMode, IPowerMode
+    internal class PowerModeService : IPowerModeService, IPowerMode
     {
-        private readonly PowerModePackage _package;
-
         public PowerModeService(PowerModePackage package)
         {
-            _package = package;
+            Package = package;
         }
-        
-        public PowerModePackage Package {
-            get { return _package; }
-        }
+
+        public PowerModePackage Package { get; }
     }
 }

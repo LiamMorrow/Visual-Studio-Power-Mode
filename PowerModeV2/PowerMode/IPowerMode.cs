@@ -27,7 +27,6 @@ using System.Runtime.InteropServices;
 
 namespace PowerMode
 {
-
     [Guid("0F4D79E8-1BDA-4852-BAFF-39E8CC87E1D5")]
     [ComVisible(true)]
     public interface IPowerMode
@@ -36,5 +35,7 @@ namespace PowerMode
     }
 
     [Guid("623E2A73-18DD-4855-ADF5-5400CA4C4EB5")]
-    public interface SPowerMode { }
+    public interface IPowerModeService
+    {
+    }
 }

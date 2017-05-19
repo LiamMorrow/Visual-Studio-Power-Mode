@@ -47,7 +47,7 @@ namespace PowerMode
         [Export(typeof(AdornmentLayerDefinition))]
         [Name("ExplosionViewportAdornment")]
         [Order(After = PredefinedAdornmentLayers.Outlining)]
-        private AdornmentLayerDefinition editorAdornmentLayer;
+        private readonly AdornmentLayerDefinition editorAdornmentLayer;
 
 #pragma warning restore 649, 169
 

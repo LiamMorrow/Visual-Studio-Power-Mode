@@ -40,7 +40,7 @@ namespace PowerMode.Extensions
 
         public static Color NextColor(this Random random)
         {
-            byte[] bytes = new byte[3];
+            var bytes = new byte[3];
             random.NextBytes(bytes);
 
             return Color.FromRgb(bytes[0], bytes[1], bytes[2]);

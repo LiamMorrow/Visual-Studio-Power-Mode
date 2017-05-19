@@ -76,16 +76,7 @@ namespace PowerMode
         public int MaxShakeAmount { get; set; } = 5;
 
         // In milliseconds
-        private static Random Random {
-            get
-            {
-                if (_random == null)
-                {
-                    _random = new Random();
-                }
-                return _random;
-            }
-        }
+        private static Random Random => _random ?? (_random = new Random());
 
         /// <summary>
         /// Keep track of how many keypresses the user has done and returns whether power mode should be activated for each change.
@@ -118,7 +109,7 @@ namespace PowerMode
                 return;
             }
 
-            if (e.Changes != null && e.Changes.Count > 0)
+            if (e.Changes?.Count > 0)
             {
                 try
                 {

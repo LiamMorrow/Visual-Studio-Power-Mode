@@ -37,7 +37,7 @@ namespace PowerMode
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [ProvideOptionPage(typeof(OptionPageGeneral), "PowerMode", "General", 1116, 1113, true)]
-    [ProvideService(typeof(SPowerMode))]
+    [ProvideService(typeof(IPowerModeService))]
     [InstalledProductRegistration("#1116", "#1117", "1.0", IconResourceID = 400)] // Info on this package for Help/About
     [Guid(PowerModePackage.PackageGuidString)]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
@@ -47,14 +47,7 @@ namespace PowerMode
         /// PowerModePackage GUID string.
         /// </summary>
         public const string PackageGuidString = "4e687eae-ae26-4139-b888-a0ae8c2e16ff";
-        private PowerModeService Service;
-        public OptionPageGeneral General {
-            get
-            {
-                return (OptionPageGeneral)GetDialogPage(typeof(OptionPageGeneral));
-            }
-        }
-
+        public OptionPageGeneral General => (OptionPageGeneral)GetDialogPage(typeof(OptionPageGeneral));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PowerModePackage"/> class.

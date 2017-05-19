@@ -11,9 +11,9 @@ namespace PowerMode
     /// <summary>
     /// Methods for helping with debugging.  All methods will only run in DEBUG mode so safe to include in release builds
     /// </summary>
-    static class DebugHelper
+    internal static class DebugHelper
     {
-        readonly static ConcurrentDictionary<string, Stopwatch> s_stopwatches = new ConcurrentDictionary<string, Stopwatch>();
+        private readonly static ConcurrentDictionary<string, Stopwatch> s_stopwatches = new ConcurrentDictionary<string, Stopwatch>();
 
         /// <summary>
         /// Starts a timer with a unique id

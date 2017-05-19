@@ -46,7 +46,7 @@ namespace PowerMode
 
         private static Rect _rect = new Rect(-5, -5, 5, 5);
 
-        private static EllipseGeometry geometry = new EllipseGeometry(_rect);
+        private static readonly EllipseGeometry geometry = new EllipseGeometry(_rect);
 
         private readonly Action<ExplosionParticle> _afterExplode;
 
@@ -68,8 +68,12 @@ namespace PowerMode
 
         static ExplosionParticle()
         {
-            var service = ServiceProvider.GlobalProvider.GetService(typeof(SPowerMode)) as IPowerMode;
-            if (service == null) return;
+            var service = ServiceProvider.GlobalProvider.GetService(typeof(IPowerModeService)) as IPowerMode;
+            if (service == null)
+            {
+                return;
+            }
+
             var page = service.Package.General;
 
             Color = page.Color;
@@ -110,16 +114,7 @@ namespace PowerMode
 
         private static int ParticleCount { get; set; }
 
-        private static Random Random {
-            get
-            {
-                if (_random == null)
-                {
-                    _random = new Random();
-                }
-                return _random;
-            }
-        }
+        private static Random Random => _random ?? (_random = new Random());
 
         public void Explode(double top, double left)
         {
