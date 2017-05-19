@@ -20,21 +20,30 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
 */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Media;
 
-namespace PowerMode
+namespace PowerMode.Extensions
 {
-    class PowerModeService : SPowerMode, IPowerMode
+    public static class RandomExtensions
     {
-        private readonly PowerModePackage _package;
-
-        public PowerModeService(PowerModePackage package)
+        public static int NextSignSwap(this Random random)
         {
-            _package = package;
+            return random.Next(0, 2) == 1 ? 1 : -1;
         }
-        
-        public PowerModePackage Package {
-            get { return _package; }
+
+        public static Color NextColor(this Random random)
+        {
+            var bytes = new byte[3];
+            random.NextBytes(bytes);
+
+            return Color.FromRgb(bytes[0], bytes[1], bytes[2]);
         }
     }
 }

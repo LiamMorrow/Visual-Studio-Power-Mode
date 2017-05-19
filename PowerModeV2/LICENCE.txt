@@ -1,4 +1,3 @@
-﻿/*
 The MIT License (MIT)
 
 Copyright (c) 2015 Liam Morrow
@@ -20,21 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-*/
-
-using System;
-using System.Runtime.InteropServices;
-
-namespace PowerMode
-{
-
-    [Guid("0F4D79E8-1BDA-4852-BAFF-39E8CC87E1D5")]
-    [ComVisible(true)]
-    public interface IPowerMode
-    {
-        PowerModePackage Package { get; }
-    }
-
-    [Guid("623E2A73-18DD-4855-ADF5-5400CA4C4EB5")]
-    public interface SPowerMode { }
-}

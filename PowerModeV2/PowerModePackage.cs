@@ -1,54 +1,23 @@
-﻿/*
-The MIT License(MIT)
-
-Copyright(c) 2015 Liam Morrow
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+﻿//------------------------------------------------------------------------------
+// <copyright file="PowerModePackage.cs" company="Company">
+//     Copyright (c) Company.  All rights reserved.
+// </copyright>
+//------------------------------------------------------------------------------
 
 using System;
-using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Windows.Media;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.Win32;
-using System;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace PowerMode
 {
-    
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
     /// </summary>
@@ -67,18 +36,18 @@ namespace PowerMode
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#1110", "#1112", "1.1.5", IconResourceID = 1400)] // Info on this package for Help/About
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     [ProvideOptionPage(typeof(OptionPageGeneral), "PowerMode", "General", 1116, 1113, true)]
-    [ProvideService(typeof(SPowerMode))]
-    [Guid(PackageGuidString)]
+    [ProvideService(typeof(IPowerModeService))]
+    [InstalledProductRegistration("#1116", "#1117", "1.0", IconResourceID = 400)] // Info on this package for Help/About
+    [Guid(PowerModePackage.PackageGuidString)]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     public sealed class PowerModePackage : Package
     {
         /// <summary>
-        /// PowerModeOptionsPackage GUID string.
+        /// PowerModePackage GUID string.
         /// </summary>
         public const string PackageGuidString = "4e687eae-ae26-4139-b888-a0ae8c2e16ff";
-        private PowerModeService Service;
+        public OptionPageGeneral General => (OptionPageGeneral)GetDialogPage(typeof(OptionPageGeneral));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PowerModePackage"/> class.
@@ -91,14 +60,6 @@ namespace PowerMode
             // initialization is the Initialize method.
         }
 
-        public OptionPageGeneral General
-        {
-            get
-            {
-                return (OptionPageGeneral)GetDialogPage(typeof(OptionPageGeneral));
-            }
-        }
-
         #region Package Members
 
         /// <summary>
@@ -108,11 +69,9 @@ namespace PowerMode
         protected override void Initialize()
         {
             base.Initialize();
-
-            Service = new PowerModeService(this);
-            ((IServiceContainer)this).AddService(typeof(SPowerMode), Service, true);
+            General.LoadSettingsFromStorage();
         }
 
-        #endregion Package Members
+        #endregion
     }
 }

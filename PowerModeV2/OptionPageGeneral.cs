@@ -44,7 +44,7 @@ namespace PowerMode
     {
         /// <summary>
         /// use this to force reloading of settings
-        /// each tiem a setting change shere we increment the number
+        /// each time a setting changes here we increment the number
         /// each explosion particle checks it's version of options against
         /// this one to check for updates
         /// </summary>
@@ -64,16 +64,17 @@ namespace PowerMode
         }
 
         [Category("Power Mode")]
+        [DefaultValue(true)]
         [DisplayName("Explosion Particle - get color from environment")]
         [Description(
             "Whether to get the color from the environment theme or not - overrides Explosion Particle Color value if set"
             )]
-        public bool bGetColorFromEnvironment
+        public bool GetColorFromEnvironment
         {
-            get { return ExplosionParticle.bGetColorFromEnvironment; }
+            get { return ExplosionParticle.GetColorFromEnvironment; }
             set
             {
-                ExplosionParticle.bGetColorFromEnvironment = value;
+                ExplosionParticle.GetColorFromEnvironment = value;
                 OptionsVersion++;
             }
         }
@@ -116,6 +117,37 @@ namespace PowerMode
                 OptionsVersion++;
             }
         }
+        [Category("Power Mode")]
+        [DisplayName("Particle Party Change Threshold")]
+        [Description("The amount of change required to trigger a particle party")]
+        [DefaultValue(20)]
+        public int ParticlePartyChangeThreshold {
+            get
+            {
+                return ExplosionViewportAdornment.ParticlePartyChangeThreshold;
+            }
+            set
+            {
+                ExplosionViewportAdornment.ParticlePartyChangeThreshold = value;
+                OptionsVersion++;
+            }
+        }
+
+        [Category("Power Mode")]
+        [DisplayName("Particle Party Enabled")]
+        [Description("Enable to create particles everywhere when a large change is made")]
+        [DefaultValue(true)]
+        public bool ParticlePartyEnabled {
+            get
+            {
+                return ExplosionViewportAdornment.ParticlePartyEnabled;
+            }
+            set
+            {
+                ExplosionViewportAdornment.ParticlePartyEnabled = value;
+                OptionsVersion++;
+            }
+        }
 
         [Category("Power Mode")]
         [DisplayName("Gravity")]
@@ -142,7 +174,7 @@ namespace PowerMode
         [Category("Power Mode")]
         [DisplayName("Particles per keystroke")]
         [Description("The number of particles to show each key press")]
-        public uint ParticlePerPress
+        public int ParticlePerPress
         {
             get { return ExplosionViewportAdornment.ParticlePerPress; }
             set { ExplosionViewportAdornment.ParticlePerPress = value; }
