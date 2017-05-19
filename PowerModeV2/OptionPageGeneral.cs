@@ -117,6 +117,37 @@ namespace PowerMode
                 OptionsVersion++;
             }
         }
+        [Category("Power Mode")]
+        [DisplayName("Particle Party Change Threshold")]
+        [Description("The amount of change required to trigger a particle party")]
+        [DefaultValue(20)]
+        public int ParticlePartyChangeThreshold {
+            get
+            {
+                return ExplosionViewportAdornment.ParticlePartyChangeThreshold;
+            }
+            set
+            {
+                ExplosionViewportAdornment.ParticlePartyChangeThreshold = value;
+                OptionsVersion++;
+            }
+        }
+
+        [Category("Power Mode")]
+        [DisplayName("Particle Party Enabled")]
+        [Description("Enable to create particles everywhere when a large change is made")]
+        [DefaultValue(true)]
+        public bool ParticlePartyEnabled {
+            get
+            {
+                return ExplosionViewportAdornment.ParticlePartyEnabled;
+            }
+            set
+            {
+                ExplosionViewportAdornment.ParticlePartyEnabled = value;
+                OptionsVersion++;
+            }
+        }
 
         [Category("Power Mode")]
         [DisplayName("Gravity")]
