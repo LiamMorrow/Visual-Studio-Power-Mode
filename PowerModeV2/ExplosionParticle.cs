@@ -42,8 +42,6 @@ namespace PowerMode
         [ThreadStatic]
         private static Random _random;
 
-        private static int s_explosionId = 0;
-
         private static Rect _rect = new Rect(-5, -5, 5, 5);
 
         private static readonly EllipseGeometry geometry = new EllipseGeometry(_rect);
@@ -90,14 +88,10 @@ namespace PowerMode
 
         public ExplosionParticle(IAdornmentLayer adornment, DTE service, Action<ExplosionParticle> afterExplode)
         {
-            var id = Interlocked.Increment(ref s_explosionId);
-            DebugHelper.StartTimer("Explosion Particle Creation: " + id);
             adornmentLayer = adornment;
             _service = service;
             _afterExplode = afterExplode;
             InitializeOptions();
-
-            DebugHelper.FinishTimer("Explosion Particle Creation: " + id);
         }
 
         public static double AlphaRemoveAmount { get; set; } = 0.045;
@@ -202,7 +196,7 @@ namespace PowerMode
         private void OnAnimationComplete()
         {
             _image.Visibility = Visibility.Hidden;
-            _afterExplode(this);
+            _afterExplode?.Invoke(this);
         }
     }
 }

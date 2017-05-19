@@ -143,7 +143,7 @@ namespace PowerMode
         [Category("Power Mode")]
         [DisplayName("Particles per keystroke")]
         [Description("The number of particles to show each key press")]
-        public uint ParticlePerPress
+        public int ParticlePerPress
         {
             get { return ExplosionViewportAdornment.ParticlePerPress; }
             set { ExplosionViewportAdornment.ParticlePerPress = value; }

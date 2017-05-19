@@ -51,13 +51,19 @@ namespace PowerMode
             _adornmentLayer = view.GetAdornmentLayer("ExplosionViewportAdornment");
             _explosionParticles =
                 new ConcurrentBag<ExplosionParticle>(
-                    Enumerable.Repeat<Func<ExplosionParticle>>(NewParticle, (int)(ParticlePerPress * 2))
+                    Enumerable.Repeat<Func<ExplosionParticle>>(NewParticle, (int)(ParticlePerPress * 3))
                         .Select(result => result()));
         }
 
         public static int ComboActivationThreshold { get; set; } = 0;
         public static int ComboTimeout { get; set; } = 10000;
-        public static uint ParticlePerPress { get; set; } = 10;
+        public static int ParticlePerPress { get; set; } = 10;
+        public static int ParticlePartyChangeThreshold { get; set; } = 20;
+
+        /// <summary>
+        /// If set to true, enables particles all over the screen on large changes
+        /// </summary>
+        public static bool ParticlePartyEnabled { get; set; } = true;
         public static bool ParticlesEnabled { get; set; } = true;
 
         public static bool ShakeEnabled { get; set; } = true;
@@ -102,7 +108,7 @@ namespace PowerMode
             return activatePowerMode; // Perhaps different levels for power-mode intensity? First just particles, then screen shake?
         }
 
-        private async void FormatCode(TextContentChangedEventArgs e)
+        private void FormatCode(TextContentChangedEventArgs e)
         {
             if ((DateTime.Now - LastKeyPress).TotalMilliseconds < MinMsBetweenShakes)
             {
@@ -111,54 +117,60 @@ namespace PowerMode
 
             if (e.Changes?.Count > 0)
             {
-                try
-                {
-                    await HandleChange(e.Changes.Sum(x => x.Delta)).ConfigureAwait(false);
-                }
-                catch
-                {
-                    //Ignore, not critical that we catch it
-                }
+                HandleChange(e.Changes.Sum(x => x.Delta));
             }
         }
 
         private ExplosionParticle GetExplosionParticle()
         {
-            if (!_explosionParticles.TryTake(out var result))
+            if (_explosionParticles.TryTake(out var result))
             {
-                result = NewParticle();
+                return result;
             }
-            return result;
+            return NewParticle();
         }
 
-        private async Task HandleChange(int delta)
+        private void HandleChange(int delta)
         {
             if (ComboCheck())
             {
+                delta = Math.Abs(delta);
                 if (ParticlesEnabled)
                 {
-                    for (uint i = 0; i < ParticlePerPress; i++)
+                    var top = _view.Caret.Top;
+                    var left = _view.Caret.Left;
+                    var partyMode = ParticlePartyEnabled && delta >= ParticlePartyChangeThreshold;
+                    var particlesToCreate = ParticlePerPress;
+                    if (partyMode)
                     {
-                        GetExplosionParticle().Explode(_view.Caret.Top, _view.Caret.Left);
+                        particlesToCreate = 200;
+                    }
+                    for (uint i = 0; i < particlesToCreate; i++)
+                    {
+
+                        if (partyMode)
+                        {
+                            top = Random.Next((int)_view.ViewportTop, (int)_view.ViewportBottom);
+                            left = Random.Next((int)_view.ViewportLeft, (int)_view.ViewportRight);
+                        }
+                        GetExplosionParticle().Explode(top, left);
                     }
                 }
                 if (ShakeEnabled)
                 {
-                    await Shake(delta).ConfigureAwait(false);
+                    Shake(delta).ConfigureAwait(false);
                 }
             }
         }
 
         private ExplosionParticle NewParticle()
         {
-            return new ExplosionParticle(_adornmentLayer,
-                    (DTE)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(DTE)),
-                    particle => _explosionParticles.Add(particle));
+            var service = (DTE)Microsoft.VisualStudio.Shell.Package.GetGlobalService(typeof(DTE));
+            return new ExplosionParticle(_adornmentLayer, service, particle => _explosionParticles.Add(particle));
         }
 
         private async Task Shake(int delta)
         {
-            delta = Math.Abs(delta);
             for (var i = 0; i < delta && i < MaxShakeAmount; i++)
             {
                 int leftAmount = ExplosionAmount * Random.NextSignSwap(),
@@ -166,7 +178,7 @@ namespace PowerMode
 
                 _view.ViewportLeft += leftAmount;
                 _view.ViewScroller.ScrollViewportVerticallyByPixels(topAmount);
-                await Task.Delay(ExplosionDelay).ConfigureAwait(false);
+                await Task.Delay(ExplosionDelay);
                 _view.ViewportLeft -= leftAmount;
                 _view.ViewScroller.ScrollViewportVerticallyByPixels(-topAmount);
             }
