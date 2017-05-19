@@ -6,9 +6,6 @@ Unfortunately, I couldn't figure out how to get the current text colour so for n
 
 Settings can be found in the Tools > options > Power Mode menu.  
 
-## 1.1.5 Release Notes 
-Fixed settings loading issue  
-Added random colour options  
 
 ## Link to built Extension:  
 https://visualstudiogallery.msdn.microsoft.com/936788cc-7213-4d48-93ae-045694781214
