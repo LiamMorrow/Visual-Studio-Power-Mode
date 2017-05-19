@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -38,15 +39,42 @@ namespace PowerMode
 {
     public class ExplosionParticle
     {
+        [ThreadStatic]
+        private static Random _random;
+
+        private static int s_explosionId = 0;
+
+        private static Rect _rect = new Rect(-5, -5, 5, 5);
+
+        private static EllipseGeometry geometry = new EllipseGeometry(_rect);
+
+        private readonly Action<ExplosionParticle> _afterExplode;
+
+        private readonly DTE _service;
+
+        private readonly IAdornmentLayer adornmentLayer;
+
+        private Image _image;
+
+        private double _iterations;
+
+        private DoubleAnimation _leftAnimation;
+
+        private DoubleAnimation _opacityAnimation;
+
+        private uint _optionsVersion = 0;
+
+        private DoubleAnimation _topAnimation;
+
         static ExplosionParticle()
         {
-            var service = ServiceProvider.GlobalProvider.GetService(typeof (SPowerMode)) as IPowerMode;
+            var service = ServiceProvider.GlobalProvider.GetService(typeof(SPowerMode)) as IPowerMode;
             if (service == null) return;
             var page = service.Package.General;
 
             Color = page.Color;
             AlphaRemoveAmount = page.AlphaRemoveAmount;
-            bGetColorFromEnvironment = bGetColorFromEnvironment;
+            GetColorFromEnvironment = GetColorFromEnvironment;
             RandomColor = page.RandomColor;
             FrameDelay = page.FrameDelay;
             Gravity = page.Gravity;
@@ -56,46 +84,33 @@ namespace PowerMode
             StartAlpha = page.StartAlpha;
         }
 
-        [ThreadStatic]
-        private static Random _random;
+        public ExplosionParticle(IAdornmentLayer adornment, DTE service, Action<ExplosionParticle> afterExplode)
+        {
+            var id = Interlocked.Increment(ref s_explosionId);
+            DebugHelper.StartTimer("Explosion Particle Creation: " + id);
+            adornmentLayer = adornment;
+            _service = service;
+            _afterExplode = afterExplode;
+            InitializeOptions();
 
-        private readonly DTE _service;
-        private readonly Action<ExplosionParticle> _afterExplode;
-        private readonly IAdornmentLayer adornmentLayer;
-
-        private static Rect _rect = new Rect(-5, -5, 5, 5);
-
-        private static EllipseGeometry geometry = new EllipseGeometry(_rect);
-        private Image _image;
-        private DoubleAnimation _leftAnimation;
-        private DoubleAnimation _topAnimation;
-        private DoubleAnimation _opacityAnimation;
-        private double _iterations;
-        private uint _optionsVersion = 0;
+            DebugHelper.FinishTimer("Explosion Particle Creation: " + id);
+        }
 
         public static double AlphaRemoveAmount { get; set; } = 0.045;
 
-        public static bool bGetColorFromEnvironment { get; set; }
-
         public static Color Color { get; set; } = Colors.Black;
-        public static bool RandomColor { get; set; }
-
         public static int FrameDelay { get; set; } = 17;
-
+        public static bool GetColorFromEnvironment { get; set; }
         public static double Gravity { get; set; } = 0.3;
-
         public static int MaxParticleCount { get; set; } = int.MaxValue;
-
         public static double MaxSideVelocity { get; set; } = 2;
-
         public static double MaxUpVelocity { get; set; } = 10;
-
+        public static bool RandomColor { get; set; }
         public static double StartAlpha { get; set; } = 0.9;
 
         private static int ParticleCount { get; set; }
 
-        private static Random Random
-        {
+        private static Random Random {
             get
             {
                 if (_random == null)
@@ -106,21 +121,40 @@ namespace PowerMode
             }
         }
 
-        public ExplosionParticle(IAdornmentLayer adornment, DTE service, Action<ExplosionParticle> afterExplode)
+        public void Explode(double top, double left)
         {
-            adornmentLayer = adornment;
-            _service = service;
-            _afterExplode = afterExplode;
-            InitializeOptions();
+            if (ParticleCount > MaxParticleCount)
+            {
+                return;
+            }
+
+            ParticleCount++;
+            if (_optionsVersion != OptionPageGeneral.OptionsVersion)
+            {
+                InitializeOptions();
+            }
+
+            var upVelocity = Random.NextDouble() * MaxUpVelocity;
+            var leftVelocity = Random.NextDouble() * MaxSideVelocity * Random.NextSignSwap();
+            _leftAnimation.From = left;
+            _leftAnimation.To = left - (_iterations * leftVelocity);
+            _topAnimation.From = top;
+            _topAnimation.By = -upVelocity;
+            _image.Visibility = Visibility.Visible;
+            _image.BeginAnimation(Canvas.LeftProperty, _leftAnimation);
+            _image.BeginAnimation(Canvas.TopProperty, _topAnimation);
+            _image.BeginAnimation(UIElement.OpacityProperty, _opacityAnimation);
+
+            ParticleCount--;
         }
 
         private void InitializeOptions()
         {
             Color brushColor;
-            if (bGetColorFromEnvironment)
+            if (GetColorFromEnvironment)
             {
-                var svc = Package.GetGlobalService(typeof (SVsUIShell)) as IVsUIShell5;
-                brushColor = (svc.GetThemedWPFColor(EnvironmentColors.PanelTextColorKey));
+                var svc = Package.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell5;
+                brushColor = svc.GetThemedWPFColor(EnvironmentColors.PanelTextColorKey);
             }
             else if (RandomColor)
             {
@@ -151,18 +185,21 @@ namespace PowerMode
             _iterations = StartAlpha / AlphaRemoveAmount;
             var timeSpan = TimeSpan.FromMilliseconds(FrameDelay * _iterations);
 
-            _leftAnimation = new DoubleAnimation();
-
-            _topAnimation = new DoubleAnimation();
-            _topAnimation.EasingFunction = new BackEase {Amplitude = Gravity * 35};
-
-            _opacityAnimation = new DoubleAnimation();
-            _opacityAnimation.From = StartAlpha;
-            _opacityAnimation.To = StartAlpha - (_iterations * AlphaRemoveAmount);
-
-            _leftAnimation.Duration = timeSpan;
-            _topAnimation.Duration = timeSpan;
-            _opacityAnimation.Duration = timeSpan;
+            _leftAnimation = new DoubleAnimation()
+            {
+                Duration = timeSpan
+            };
+            _topAnimation = new DoubleAnimation()
+            {
+                EasingFunction = new BackEase { Amplitude = Gravity * 35 },
+                Duration = timeSpan
+            };
+            _opacityAnimation = new DoubleAnimation()
+            {
+                From = StartAlpha,
+                To = StartAlpha - (_iterations * AlphaRemoveAmount),
+                Duration = timeSpan
+            };
             _opacityAnimation.Completed += (sender, args) => OnAnimationComplete();
             _optionsVersion = OptionPageGeneral.OptionsVersion;
         }
@@ -171,26 +208,6 @@ namespace PowerMode
         {
             _image.Visibility = Visibility.Hidden;
             _afterExplode(this);
-        }
-
-        public void Explode(double top, double left)
-        {
-            if (ParticleCount > MaxParticleCount)
-                return;
-            ParticleCount++;
-            if (_optionsVersion != OptionPageGeneral.OptionsVersion) InitializeOptions();
-            var upVelocity = Random.NextDouble() * MaxUpVelocity;
-            var leftVelocity = Random.NextDouble() * MaxSideVelocity * Random.NextSignSwap();
-            _leftAnimation.From = left;
-            _leftAnimation.To = left - (_iterations * leftVelocity);
-            _topAnimation.From = top;
-            _topAnimation.By = -upVelocity;
-            _image.Visibility = Visibility.Visible;
-            _image.BeginAnimation(Canvas.LeftProperty, _leftAnimation);
-            _image.BeginAnimation(Canvas.TopProperty, _topAnimation);
-            _image.BeginAnimation(Image.OpacityProperty, _opacityAnimation);
-
-            ParticleCount--;
         }
     }
 }

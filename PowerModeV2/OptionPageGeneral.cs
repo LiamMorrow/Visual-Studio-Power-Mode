@@ -44,7 +44,7 @@ namespace PowerMode
     {
         /// <summary>
         /// use this to force reloading of settings
-        /// each tiem a setting change shere we increment the number
+        /// each time a setting changes here we increment the number
         /// each explosion particle checks it's version of options against
         /// this one to check for updates
         /// </summary>
@@ -64,16 +64,17 @@ namespace PowerMode
         }
 
         [Category("Power Mode")]
+        [DefaultValue(true)]
         [DisplayName("Explosion Particle - get color from environment")]
         [Description(
             "Whether to get the color from the environment theme or not - overrides Explosion Particle Color value if set"
             )]
-        public bool bGetColorFromEnvironment
+        public bool GetColorFromEnvironment
         {
-            get { return ExplosionParticle.bGetColorFromEnvironment; }
+            get { return ExplosionParticle.GetColorFromEnvironment; }
             set
             {
-                ExplosionParticle.bGetColorFromEnvironment = value;
+                ExplosionParticle.GetColorFromEnvironment = value;
                 OptionsVersion++;
             }
         }
