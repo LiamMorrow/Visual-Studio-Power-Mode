@@ -63,6 +63,7 @@
     <Compile Include="PowerMode\IPowerMode.cs" />
     <Compile Include="PowerMode\PowerModeService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TogglePowerModeCommand.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Key.snk" />
@@ -196,6 +197,10 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+    <Content Include="Resources\TogglePowerModeCommand.png" />
+    <VSCTCompile Include="PowerModePackage.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+    </VSCTCompile>
     <Content Include="Resources\PowerModeOptionsPackage.ico" />
     <Content Include="Resources\PowerModePackage.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -207,6 +207,15 @@ namespace PowerMode
         }
 
         [Category("Power Mode")]
+        [DisplayName("Power Mode Enabled")]
+        [Description("Sets whether anything is enabled")]
+        [DefaultValue(true)]
+        public bool PowerModeEnabled {
+            get { return ExplosionViewportAdornment.PowerModeEnabled; }
+            set { ExplosionViewportAdornment.PowerModeEnabled = value; }
+        }
+
+        [Category("Power Mode")]
         [DisplayName("Particles Enabled")]
         [Description("Sets whether the particles are enabled")]
         public bool ParticlesEnabled
