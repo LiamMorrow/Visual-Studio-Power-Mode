@@ -13,5 +13,5 @@ Added random colour options
 ## Link to built Extension:  
 https://visualstudiogallery.msdn.microsoft.com/936788cc-7213-4d48-93ae-045694781214
 
-## Screenshot:  
-![alt text](https://raw.githubusercontent.com/LiamMorrow/Visual-Studio-Power-Mode/master/PowerMode/Resources/Screenshot.png "Screenshot")
+## Demo:  
+![alt text](https://raw.githubusercontent.com/LiamMorrow/Visual-Studio-Power-Mode/master/Images/demo.gif "Power Mode in Action")
