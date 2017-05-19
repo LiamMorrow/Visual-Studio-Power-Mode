@@ -69,6 +69,7 @@ namespace PowerMode
         protected override void Initialize()
         {
             base.Initialize();
+            General.LoadSettingsFromStorage();
         }
 
         #endregion
