@@ -84,6 +84,8 @@ namespace PowerMode
         // In milliseconds
         private static Random Random => _random ?? (_random = new Random());
 
+        public static bool PowerModeEnabled { get; set; } = true;
+
         /// <summary>
         /// Keep track of how many keypresses the user has done and returns whether power mode should be activated for each change.
         /// </summary>
@@ -110,6 +112,10 @@ namespace PowerMode
 
         private void FormatCode(TextContentChangedEventArgs e)
         {
+            if (!PowerModeEnabled)
+            {
+                return;
+            }
             if ((DateTime.Now - LastKeyPress).TotalMilliseconds < MinMsBetweenShakes)
             {
                 return;
@@ -132,6 +138,10 @@ namespace PowerMode
 
         private void HandleChange(int delta)
         {
+            if (!PowerModeEnabled)
+            {
+                return;
+            }
             if (ComboCheck())
             {
                 delta = Math.Abs(delta);
