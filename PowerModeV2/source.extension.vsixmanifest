@@ -9,7 +9,7 @@
         <PreviewImage>demo.gif</PreviewImage>
     </Metadata>
     <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[11.0,16.0]" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[11.0,16.1]" />
     </Installation>
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
